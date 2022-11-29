@@ -21,6 +21,9 @@
 // }
 
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:kitaby/features/home/presentation/widgets/books_column.dart';
+import 'package:kitaby/utils/constants.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -33,13 +36,13 @@ class HomePage extends StatelessWidget {
         appBar: PreferredSize(
           child: SafeArea(
             child: Padding(
-              padding: EdgeInsets.symmetric(vertical: 10),
+              padding: EdgeInsets.symmetric(vertical: 10.h),
               child: Row(
                 children: [
                   Row(
                     children: [
                       SizedBox(
-                        width: 25,
+                        width: 25.w,
                       ),
                       Container(
                         clipBehavior: Clip.antiAlias,
@@ -48,20 +51,20 @@ class HomePage extends StatelessWidget {
                         ),
                         child: Image.asset(
                           'assets/images/pp.jpg',
-                          width: 32,
-                          height: 33,
+                          width: 32.w,
+                          height: 33.h,
                         ),
                       ),
                     ],
                   ),
                   SizedBox(
-                    width: 17,
+                    width: 17.w,
                   ),
                   Text(
                     'مرحبا أحمد!',
                     style: Theme.of(context).textTheme.bodyText1!.copyWith(
                           fontWeight: FontWeight.bold,
-                          fontSize: 14,
+                          fontSize: 14.sp,
                         ),
                   ),
                 ],
@@ -69,6 +72,46 @@ class HomePage extends StatelessWidget {
             ),
           ),
           preferredSize: AppBar().preferredSize,
+        ),
+        body: Container(
+          padding: EdgeInsets.only(right: 25.w),
+          width: MediaQuery.of(context).size.width,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SizedBox(
+                height: 43.h,
+              ),
+              Text(
+                'كتب متداولة',
+                style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 24.sp,
+                    ),
+              ),
+              SizedBox(
+                height: 26.h,
+              ),
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: [
+                    ...List.generate(
+                      10,
+                      (index) => Row(
+                        children: [
+                          BooksColumn(title: 'معنى الحبتة'),
+                          SizedBox(
+                            width: 26.w,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              )
+            ],
+          ),
         ),
       ),
     );

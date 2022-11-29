@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:kitaby/features/home/presentation/pages/home_page.dart';
 import 'package:kitaby/features/store_books/presentation/pages/store_books_page.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:kitaby/utils/constants.dart';
@@ -27,7 +28,7 @@ class AppBase extends StatelessWidget {
             appBarTheme: AppBarTheme(
               color: Colors.white,
               elevation: 0,
-              centerTitle: true,
+              // centerTitle: true,
               iconTheme: const IconThemeData(
                 color: Constants.mainFontColor,
               ),
@@ -35,7 +36,7 @@ class AppBase extends StatelessWidget {
             ),
             textTheme: GoogleFonts.tajawalTextTheme(),
           ),
-          home: const StoreBooksPage(),
+          home: const HomePage(),
         );
       },
     );

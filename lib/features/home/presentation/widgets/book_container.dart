@@ -20,12 +20,12 @@ class BookContainer extends StatelessWidget {
     final textTheme = Theme.of(context).textTheme;
     return GestureDetector(
       onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => StoreBookDetailsPage(),
-          ),
-        );
+        // Navigator.push(
+        //   context,
+        //   MaterialPageRoute(
+        //     builder: (context) => StoreBookDetailsPage(book: ,),
+        //   ),
+        // );
       },
       child: Container(
         alignment: Alignment.center,

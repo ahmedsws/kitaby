@@ -1,19 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:kitaby/features/store_books/models/book_model.dart';
 import 'package:kitaby/features/store_books/presentation/pages/store_book_details_page.dart';
 import 'package:kitaby/utils/constants.dart';
+
+import '../../../../core/presentation/widgets/containers_decoration.dart';
 
 class BookContainer extends StatelessWidget {
   const BookContainer({
     Key? key,
-    required this.title,
-    required this.author,
-    required this.imageUrl,
-    required this.price,
+    required this.book,
   }) : super(key: key);
 
-  final String title, author, imageUrl;
-  final double price;
+  final BookModel book;
 
   @override
   Widget build(BuildContext context) {
@@ -23,24 +22,15 @@ class BookContainer extends StatelessWidget {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => StoreBookDetailsPage(),
+            builder: (context) => StoreBookDetailsPage(
+              book: book,
+            ),
           ),
         );
       },
       child: Container(
         alignment: Alignment.center,
-        decoration: BoxDecoration(
-          color: Theme.of(context).primaryColor,
-          borderRadius: BorderRadius.circular(8),
-          boxShadow: [
-            BoxShadow(
-              color: const Color(0xFFE0E0E0).withOpacity(.45),
-              blurRadius: 42,
-              offset: const Offset(0, 14),
-              spreadRadius: 0,
-            )
-          ],
-        ),
+        decoration: containersDecoration(context),
         width: 159.w,
         // height: 294.h,
         child: Center(
@@ -55,7 +45,7 @@ class BookContainer extends StatelessWidget {
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(5.r),
                   ),
-                  child: Image.asset(imageUrl),
+                  child: Image.network(book.coverImageUrl),
                 ),
               ),
               SizedBox(
@@ -64,10 +54,9 @@ class BookContainer extends StatelessWidget {
               Padding(
                 padding: EdgeInsets.only(right: 8.w),
                 child: Column(
-                  // crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      title,
+                      book.title,
                       style: textTheme.bodyText1!.copyWith(
                         fontSize: 16.sp,
                         fontWeight: FontWeight.bold,
@@ -78,7 +67,7 @@ class BookContainer extends StatelessWidget {
                       height: 8.h,
                     ),
                     Text(
-                      author,
+                      book.author,
                       style: textTheme.bodyText2!.copyWith(
                         color: Constants.secondrayFontColor,
                         fontSize: 12.sp,
@@ -90,7 +79,7 @@ class BookContainer extends StatelessWidget {
                       height: 8.h,
                     ),
                     Text(
-                      '$price د.ل',
+                      '${book.price} د.ل',
                       style: textTheme.bodyText1!.copyWith(
                         fontSize: 16.sp,
                         fontWeight: FontWeight.bold,

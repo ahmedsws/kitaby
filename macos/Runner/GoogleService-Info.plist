@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>653370201249-adq4jcgtgkvto4p4qf892bkrrbphkapv.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.653370201249-adq4jcgtgkvto4p4qf892bkrrbphkapv</string>
+	<key>API_KEY</key>
+	<string>AIzaSyAeRxDXKqsU3qL15LgNtoMKBuShOCih-lc</string>
+	<key>GCM_SENDER_ID</key>
+	<string>653370201249</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.example.kitaby</string>
+	<key>PROJECT_ID</key>
+	<string>mybook-f7793</string>
+	<key>STORAGE_BUCKET</key>
+	<string>mybook-f7793.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:653370201249:ios:e2144238990eb88ab88ce0</string>
+	<key>DATABASE_URL</key>
+	<string>https://mybook-f7793-default-rtdb.firebaseio.com</string>
+</dict>
+</plist>

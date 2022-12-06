@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:kitaby/features/store_books/models/book_model.dart';
@@ -14,9 +15,13 @@ class StoreBookDetailsPage extends StatelessWidget {
 
   final BookModel book;
 
+
+
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
+
+
 
     return Directionality(
       textDirection: TextDirection.rtl,
@@ -85,6 +90,14 @@ class StoreBookDetailsPage extends StatelessWidget {
             Positioned(
               bottom: 30.h,
               child: BaseButton(
+                onPressed: () {
+                  FirebaseFirestore.instance.collection('Users').doc('960aFXZwepWCzLXkUWAp').collection('Cart').doc('hhh').collection('Cart_Item').add(
+                      {
+                        "book_isbn": book.isbn,
+                        "quantity": 1,
+                      }
+                  );
+                },
                 text: 'إضافة إلى السلة بسعر ${book.price} د.ل',
               ),
             ),

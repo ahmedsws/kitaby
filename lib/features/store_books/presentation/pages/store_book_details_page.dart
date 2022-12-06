@@ -1,10 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:kitaby/features/store_books/models/book_model.dart';
 import 'package:kitaby/utils/constants.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
+import '../../../../core/presentation/widgets/base_button.dart';
+
 class StoreBookDetailsPage extends StatelessWidget {
-  const StoreBookDetailsPage({super.key});
+  const StoreBookDetailsPage({
+    super.key,
+    required this.book,
+  });
+
+  final BookModel book;
 
   @override
   Widget build(BuildContext context) {
@@ -32,13 +40,13 @@ class StoreBookDetailsPage extends StatelessWidget {
                     height: 276.h,
                     width: 204.w,
                     alignment: Alignment.center,
-                    child: Image.asset('assets/images/book4.jpg'),
+                    child: Image.network(book.coverImageUrl),
                   ),
                   SizedBox(
                     height: 30.h,
                   ),
                   Text(
-                    'السيرة النبوية الصحيحة',
+                    book.title,
                     style: textTheme.headline5!.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
@@ -47,7 +55,7 @@ class StoreBookDetailsPage extends StatelessWidget {
                     height: 15.h,
                   ),
                   Text(
-                    'أكرم ضياء العمري',
+                    book.author,
                     style: textTheme.bodyText2!.copyWith(
                       color: Constants.secondrayFontColor,
                       fontSize: 14.sp,
@@ -61,7 +69,7 @@ class StoreBookDetailsPage extends StatelessWidget {
                   SizedBox(
                     width: 319.w,
                     child: Text(
-                      'إن عقول الاصحاء تتفق في خلق الله لها, ولكنه جعل الاختلاف في نفوسهم وميولها ورغباتها, والعقل لم يُخلق ليشتهي, ولكنه خُلق ليدل ويهدي ويتفكر ويري صاحبه',
+                      book.description,
                       style: textTheme.bodyText2!.copyWith(
                         color: Constants.secondrayFontColor.withOpacity(.7),
                         fontSize: 16.sp,
@@ -76,28 +84,9 @@ class StoreBookDetailsPage extends StatelessWidget {
             ),
             Positioned(
               bottom: 30.h,
-              child: ElevatedButton(
-                  style: ButtonStyle(
-                    fixedSize: MaterialStateProperty.all(
-                      Size(319.w, 60.h),
-                    ),
-                    backgroundColor: MaterialStateProperty.all(
-                        Theme.of(context).accentColor),
-                    shape: MaterialStateProperty.all(
-                      RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(15.r),
-                      ),
-                    ),
-                  ),
-                  onPressed: () {},
-                  child: Text(
-                    'إضافة إلى السلة بسعر 30 د.ل',
-                    style: textTheme.bodyMedium!.copyWith(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16.sp,
-                      color: Theme.of(context).primaryColor,
-                    ),
-                  )),
+              child: BaseButton(
+                text: 'إضافة إلى السلة بسعر ${book.price} د.ل',
+              ),
             ),
           ],
         ),

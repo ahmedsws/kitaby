@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "653370201249",
+    "firebase_url": "https://mybook-f7793-default-rtdb.firebaseio.com",
+    "project_id": "mybook-f7793",
+    "storage_bucket": "mybook-f7793.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:653370201249:android:2506a68ce3c68322b88ce0",
+        "android_client_info": {
+          "package_name": "com.example.kitaby"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "653370201249-rcvptb6l2al69rbn7tpddhokh6b3340k.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB0cLYcUp7GqaC8IogzOn4PPa8BXhiuCUI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "653370201249-rcvptb6l2al69rbn7tpddhokh6b3340k.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "653370201249-adq4jcgtgkvto4p4qf892bkrrbphkapv.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.kitaby"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -7,7 +7,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:kitaby/app_base.dart';
+import 'package:kitaby/core/presentation/pages/app_base.dart';
 
 import 'package:kitaby/main.dart';
 

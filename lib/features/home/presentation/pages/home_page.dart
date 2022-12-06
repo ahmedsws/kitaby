@@ -1,32 +1,50 @@
-// import 'package:flutter/material.dart';
-// import 'package:flutter_svg/flutter_svg.dart';
-// import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'dart:convert';
 
-// class HomePage extends StatelessWidget {
-//   const HomePage({super.key});
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: AppBar(
-//         actions: [
-//           Padding(
-//             padding: const EdgeInsets.only(left: 10),
-//             child: SvgPicture.asset('assets/icons/search.svg'),
-//           ),
-//         ],
-//       ),
-//     );
-//   }
-// }
-
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:kitaby/features/home/presentation/widgets/books_column.dart';
+import 'package:kitaby/features/authentication/repository/models/user_model.dart';
 import 'package:kitaby/utils/constants.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   const HomePage({super.key});
+
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  Future<UserModel?> getUser() async {
+    final prefs = await SharedPreferences.getInstance();
+
+    final String? result = prefs.getString('user');
+
+    if (result != null) {
+      final value = jsonDecode(result);
+
+      return UserModel.fromJson(value);
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    FutureBuilder(
+      future: getUser(),
+      builder: (context, snapshot) {
+        if (snapshot.data != null) {
+          print(snapshot.data!.name);
+          return SizedBox();
+        } else {
+          print('not found user');
+
+          return SizedBox();
+        }
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {

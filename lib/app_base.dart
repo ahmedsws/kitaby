@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:kitaby/features/home/presentation/pages/cart_page.dart';
 import 'package:kitaby/features/home/presentation/pages/home_page.dart';
+import 'package:kitaby/features/home/presentation/pages/orders.dart';
 import 'package:kitaby/features/store_books/presentation/pages/store_books_page.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:kitaby/utils/constants.dart';
@@ -36,7 +38,7 @@ class AppBase extends StatelessWidget {
             ),
             textTheme: GoogleFonts.tajawalTextTheme(),
           ),
-          home: const HomePage(),
+          home: const Orders(),
         );
       },
     );

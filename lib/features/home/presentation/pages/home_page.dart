@@ -1,14 +1,19 @@
 import 'dart:convert';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:kitaby/features/home/presentation/widgets/books_column.dart';
 import 'package:kitaby/features/authentication/repository/models/user_model.dart';
+import 'package:kitaby/features/home/presentation/widgets/books_row.dart';
+import 'package:kitaby/features/store_books/models/book_model.dart';
 import 'package:kitaby/utils/constants.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class HomePage extends StatefulWidget {
+
+
   const HomePage({super.key});
 
   @override
@@ -48,6 +53,7 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    CollectionReference books = FirebaseFirestore.instance.collection('Books');
     return Directionality(
       textDirection: TextDirection.rtl,
       child: Scaffold(
@@ -131,20 +137,32 @@ class _HomePageState extends State<HomePage> {
                 ),
                 SingleChildScrollView(
                   scrollDirection: Axis.horizontal,
-                  child: Row(
-                    children: [
-                      ...List.generate(
-                        10,
-                        (index) => Row(
-                          children: [
-                            BooksColumn(title: 'معنى الحبتة'),
-                            SizedBox(
-                              width: 26.w,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
+                  child: FutureBuilder(
+                    future: books.orderBy('ISBN').limitToLast(2).get(),
+                    builder: (context, snapshot) {
+                      return snapshot.connectionState == ConnectionState.done ?
+                        Row(
+                        children: [
+                          ...snapshot.data!.docs.map(
+                                  (doc) { Map<String, dynamic> data =
+                                      doc.data() as Map<String, dynamic>;
+                                    final book = BookModel.fromJson(data);
+                                    return Row(
+                                      children: [
+                                        BooksColumn(book: book),
+                                        SizedBox(
+                                          width: 26.w,
+                                        ),
+                                      ],
+                                    );
+                          }),
+
+
+                        ],
+                        ): const Center(
+                        child: CircularProgressIndicator(),
+                      );
+                    }
                   ),
                 ),
                 SizedBox(
@@ -153,139 +171,45 @@ class _HomePageState extends State<HomePage> {
                 Container(
                     margin: EdgeInsets.only(left: 16.w, right: 20.w),
                     child: Divider()),
-                SizedBox(
-                  height: 39.h,
-                ),
-                Text(
-                  'جديد',
-                  style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 24.sp,
-                      ),
-                ),
-                SizedBox(
-                  height: 22.h,
-                ),
-                Column(
-                  children: [
-                    ...List.generate(
-                      10,
-                      (index) => Column(
-                        children: [
-                          Container(
-                            width: 324.w,
-                            height: 129.h,
-                            margin: EdgeInsets.only(left: 15.w),
-                            decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(8),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.grey.withOpacity(.1),
-                                    spreadRadius: 1,
-                                    blurRadius: 20,
-                                    offset: Offset(0, 0),
-                                  ),
-                                ]),
-                            child: Row(
-                              children: [
-                                Container(
-                                  padding: EdgeInsets.only(left: 19.w),
-                                  clipBehavior: Clip.antiAlias,
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                  child: Image.asset(
-                                    'assets/images/الكتاب1.jpg',
-                                    width: 77.w,
-                                    height: 111.h,
-                                  ),
-                                ),
-                                Column(
-                                  children: [
-                                    SizedBox(
-                                      height: 19.h,
-                                    ),
-                                    Text(
-                                      'معني الحياة',
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .bodyLarge!
-                                          .copyWith(
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 16.sp,
-                                          ),
-                                    ),
-                                    SizedBox(
-                                      height: 11.h,
-                                    ),
-                                    Text(
-                                      'عبد الله الوهيبي',
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .bodyLarge!
-                                          .copyWith(
-                                            fontSize: 12.sp,
-                                            color: Colors.grey,
-                                          ),
-                                    ),
-                                    SizedBox(
-                                      height: 17.h,
-                                    ),
-                                    Row(
-                                      children: [
-                                        Image.asset(
-                                          'assets/images/Star 4.png',
-                                          width: 14.w,
-                                          height: 14.h,
-                                        ),
-                                        Image.asset(
-                                          'assets/images/Star 4.png',
-                                          width: 14.w,
-                                          height: 14.h,
-                                        ),
-                                        Image.asset(
-                                          'assets/images/Star 4.png',
-                                          width: 14.w,
-                                          height: 14.h,
-                                        ),
-                                        Image.asset(
-                                          'assets/images/Star 4.png',
-                                          width: 14.w,
-                                          height: 14.h,
-                                        ),
-                                        Image.asset(
-                                          'assets/images/Star 4.png',
-                                          width: 14.w,
-                                          height: 14.h,
-                                          color: Color(0xFFEDEDEF),
-                                        ),
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                                SizedBox(
-                                  width: 130.w,
-                                ),
-                                Column(
-                                  children: [
-                                    SizedBox(
-                                      height: 16.h,
-                                    ),
-                                    Image.asset('assets/images/Vector.png'),
-                                  ],
-                                ),
-                              ],
-                            ),
-                          ),
-                          SizedBox(
-                            height: 9.h,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
+
+                SizedBox(height: 39.h,),
+                Text('جديد',
+                style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 24.sp,
+                ),),
+                SizedBox(height: 22.h,),
+                   Column(
+                     children:[
+                     FutureBuilder(
+                         future: books.orderBy('ISBN', descending: true).get(),
+                         builder: (context, snapshot) {
+                           return snapshot.connectionState == ConnectionState.done ?
+                           Column(
+                             children: [
+                               ...snapshot.data!.docs.map(
+                                       (doc) { Map<String, dynamic> data =
+                                   doc.data() as Map<String, dynamic>;
+                                   final book = BookModel.fromJson(data);
+                                   return Column(
+                                     children: [
+                                       BooksRow(book: book),
+                                       SizedBox(height: 9.h,),
+                                     ],
+                                   );
+                                   }),
+
+
+                             ],
+                           ): const Center(
+                             child: CircularProgressIndicator(),
+                           );
+                         }
+                     ),
+
+
+                  ]),
+
               ],
             ),
           ),

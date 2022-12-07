@@ -7,6 +7,7 @@ import 'package:kitaby/features/store_books/presentation/pages/store_books_page.
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:kitaby/utils/constants.dart';
 
+import '../../../features/store_books/presentation/pages/store_book_details_page.dart';
 import '../../../firebase_options.dart';
 
 class AppBase extends StatelessWidget {
@@ -36,7 +37,7 @@ class AppBase extends StatelessWidget {
             ),
             textTheme: GoogleFonts.tajawalTextTheme(),
           ),
-          home: const SignupPage(),
+          home: const StoreBooksPage(),
         );
       },
     );

@@ -44,7 +44,7 @@ class BookModel {
         // publicationDate = DateTime.parse(json['Publication_Date']),
         pageCount = json['Page_Count'],
         quantity = json['Quantity'],
-        price = double.parse(json['Price']),
+        price = json['Price'],
         rating = 5.5, //json[''],
         status = json['Status'],
         dealType = 'sell'; //json[''];

@@ -33,7 +33,8 @@ dependencies:
   firebase_auth: ^4.1.5
   firebase_core: ^2.3.0
   shared_preferences: ^2.0.15
-  flutter_otp_text_field: ^1.1.1
+  flutter_otp_text_field: ^1.1.0+2
+  
   # firebase_in_app_messaging: ^0.7.0+7
   # firebase_messaging: ^14.1.3
   flutter:

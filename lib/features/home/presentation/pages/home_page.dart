@@ -84,13 +84,31 @@ class _HomePageState extends State<HomePage> {
                   SizedBox(
                     width: 17.w,
                   ),
-                  Text(
-                    'مرحبا أحمد!',
-                    style: Theme.of(context).textTheme.bodyText1!.copyWith(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 14.sp,
-                        ),
-                  ),
+                  FutureBuilder(
+                      future: getUser(),
+                      builder: (context, snapshot) {
+                        return snapshot.data == null
+                            ? Text(
+                                'مرحبا أحمد!',
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodyText1!
+                                    .copyWith(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 14.sp,
+                                    ),
+                              )
+                            : Text(
+                                'مرحبا !',
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodyText1!
+                                    .copyWith(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 14.sp,
+                                    ),
+                              );
+                      }),
                 ],
               ),
             ),
@@ -147,10 +165,13 @@ class _HomePageState extends State<HomePage> {
                     }
                   ),
                 ),
-                SizedBox(height: 38.h,),
+                SizedBox(
+                  height: 38.h,
+                ),
                 Container(
-                  margin: EdgeInsets.only(left:16.w , right: 20.w),
+                    margin: EdgeInsets.only(left: 16.w, right: 20.w),
                     child: Divider()),
+
                 SizedBox(height: 39.h,),
                 Text('جديد',
                 style: Theme.of(context).textTheme.bodyLarge!.copyWith(
@@ -188,6 +209,7 @@ class _HomePageState extends State<HomePage> {
 
 
                   ]),
+
               ],
             ),
           ),

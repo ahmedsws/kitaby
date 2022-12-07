@@ -2,7 +2,6 @@ import 'dart:convert';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_otp_text_field/flutter_otp_text_field.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:kitaby/core/presentation/widgets/base_button.dart';
 import 'package:kitaby/core/presentation/widgets/containers_decoration.dart';
@@ -13,6 +12,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../../../core/presentation/widgets/base_app_bar.dart';
 import '../widgets/input_box_column.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_otp_text_field/flutter_otp_text_field.dart';
 
 class SignupPage extends StatefulWidget {
   const SignupPage({super.key});
@@ -29,6 +29,10 @@ class _SignupPageState extends State<SignupPage> {
   late TextEditingController confirmPasswordController;
 
   final _formKey = GlobalKey<FormState>();
+
+  bool isRegistiring = false;
+
+  
 
   @override
   void initState() {
@@ -109,190 +113,183 @@ class _SignupPageState extends State<SignupPage> {
                   SizedBox(
                     height: 40.h,
                   ),
-                  BaseButton(
-                    text: 'تسجيل',
-                    onPressed: () async {
-                      if (!_formKey.currentState!.validate()) {
-                        await showDialog(
-                          context: context,
-                          builder: (context) => Column(
-                            children: [
-                              OtpTextField(
-                                numberOfFields: 6,
-                                borderColor: Theme.of(context).accentColor,
-                                //set to true to show as box or false to show as dash
-                                showFieldAsBox: true,
-                                //runs when a code is typed in
-                                onCodeChanged: (String code) {
-                                  //handle validation or checks here
-                                },
-                                //runs when every textfield is filled
-                                onSubmit: (String verificationCode) {
-                                  showDialog(
-                                    context: context,
-                                    builder: (context) {
-                                      return AlertDialog(
-                                        title: Text("رمز التحقق"),
-                                        content: Text(
-                                            'رمز التحقق هو $verificationCode'),
+                  isRegistiring
+                      ? CircularProgressIndicator(
+                          color: Theme.of(context).accentColor,
+                        )
+                      : BaseButton(
+                          text: 'تسجيل',
+                          onPressed: () async {
+                            setState(() {
+                              isRegistiring = true;
+                            });
+                            if (_formKey.currentState!.validate()) {
+                              FirebaseAuth auth = FirebaseAuth.instance;
+                              CollectionReference users = FirebaseFirestore
+                                  .instance
+                                  .collection('Users');
+
+                              final String phoneNumber =
+                                  phoneController.text.substring(1);
+
+                              await FirebaseAuth.instance.verifyPhoneNumber(
+                                phoneNumber: '+218$phoneNumber',
+                                verificationCompleted:
+                                    (PhoneAuthCredential credential) async {
+                                  await auth
+                                      .signInWithCredential(credential)
+                                      .then(
+                                    (value) {
+                                      final user = UserModel(
+                                        id: value.user!.uid,
+                                        name: nameController.text,
+                                        username: phoneController.text,
+                                        phoneNumber: phoneController.text,
+                                        location: addressController.text,
+                                        password: passwordController.text,
+                                      ).toJson();
+
+                                      users.add(user).then(
+                                        (value) async {
+                                          final prefs = await SharedPreferences
+                                              .getInstance();
+
+                                          prefs.setString(
+                                            'user',
+                                            jsonEncode(user),
+                                          );
+
+                                          WidgetsBinding.instance
+                                              .addPostFrameCallback(
+                                            (timeStamp) {
+                                              Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      const StoreBooksPage(),
+                                                ),
+                                              );
+                                            },
+                                          );
+                                        },
                                       );
                                     },
                                   );
-                                }, // end onSubmit
-                              ),
-                            ],
-                          ),
-                        );
-                      }
-                      // if (_formKey.currentState!.validate()) {
+                                },
+                                verificationFailed: (FirebaseAuthException e) {
+                                  if (e.code == 'invalid-phone-number') {
+                                    print(
+                                        'The provided phone number is not valid.');
+                                  }
+                                },
+                                codeSent: (String verificationId,
+                                    int? resendToken) async {
+                                  // Update the UI - wait for the user to enter the SMS code
+                                  late String smsCode;
+                                  await showModalBottomSheet(
+                                    context: context,
+                                    isScrollControlled: true,
+                                    builder: (context) => Container(
+                                      height: 500.h,
+                                      color: Theme.of(context).primaryColor,
+                                      child: Column(
+                                        children: [
+                                          SizedBox(
+                                            height: 30.h,
+                                          ),
+                                          Center(
+                                            child: OtpTextField(
+                                              numberOfFields: 6,
+                                              borderColor:
+                                                  Theme.of(context).accentColor,
+                                              decoration: InputDecoration(
+                                                border: OutlineInputBorder(
+                                                  borderSide: BorderSide(
+                                                    color: Theme.of(context)
+                                                        .accentColor,
+                                                  ),
+                                                ),
+                                              ),
+                                              //set to true to show as box or false to show as dash
+                                              showFieldAsBox: true,
+                                              //runs when a code is typed in
+                                              onCodeChanged: (String code) {
+                                                //handle validation or checks here
+                                              },
+                                              //runs when every textfield is filled
+                                              onSubmit:
+                                                  (String verificationCode) {
+                                                setState(
+                                                  () {
+                                                    smsCode = verificationCode;
+                                                  },
+                                                );
+                                              }, // end onSubmit
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ).then((value) async {
+                                    // Create a PhoneAuthCredential with the code
+                                    PhoneAuthCredential phoneAuthCredential =
+                                        PhoneAuthProvider.credential(
+                                      verificationId: verificationId,
+                                      smsCode: smsCode,
+                                    );
 
-                      //   FirebaseAuth auth = FirebaseAuth.instance;
-                      //   CollectionReference users =
-                      //       FirebaseFirestore.instance.collection('Users');
+                                    // Sign the user in (or link) with the credential
+                                    await auth
+                                        .signInWithCredential(
+                                            phoneAuthCredential)
+                                        .then(
+                                      (value) {
+                                        final user = UserModel(
+                                          id: value.user!.uid,
+                                          name: nameController.text,
+                                          username: phoneController.text,
+                                          phoneNumber: phoneController.text,
+                                          location: addressController.text,
+                                          password: passwordController.text,
+                                        ).toJson();
 
-                      //   final String phoneNumber =
-                      //       phoneController.text.substring(1);
+                                        users.add(user).then(
+                                          (value) async {
+                                            final prefs =
+                                                await SharedPreferences
+                                                    .getInstance();
 
-                      //   await FirebaseAuth.instance.verifyPhoneNumber(
-                      //     phoneNumber: '+218$phoneNumber',
-                      //     verificationCompleted:
-                      //         (PhoneAuthCredential credential) async {
-                      //       await auth.signInWithCredential(credential).then(
-                      //         (value) {
-                      //           final user = UserModel(
-                      //             id: value.user!.uid,
-                      //             name: nameController.text,
-                      //             username: phoneController.text,
-                      //             phoneNumber: phoneController.text,
-                      //             location: addressController.text,
-                      //             password: passwordController.text,
-                      //           ).toJson();
+                                            prefs.setString(
+                                              'user',
+                                              jsonEncode(user),
+                                            );
 
-                      //           users.add(user).then(
-                      //             (value) async {
-                      //               final prefs =
-                      //                   await SharedPreferences.getInstance();
-
-                      //               prefs.setString(
-                      //                 'user',
-                      //                 jsonEncode(user),
-                      //               );
-
-                      //               WidgetsBinding.instance
-                      //                   .addPostFrameCallback(
-                      //                 (timeStamp) {
-                      //                   Navigator.push(
-                      //                     context,
-                      //                     MaterialPageRoute(
-                      //                       builder: (context) =>
-                      //                           const StoreBooksPage(),
-                      //                     ),
-                      //                   );
-                      //                 },
-                      //               );
-                      //             },
-                      //           );
-                      //         },
-                      //       );
-                      //     },
-                      //     verificationFailed: (FirebaseAuthException e) {
-                      //       if (e.code == 'invalid-phone-number') {
-                      //         print('The provided phone number is not valid.');
-                      //       }
-                      //     },
-                      //     codeSent:
-                      //         (String verificationId, int? resendToken) async {
-                      //       // Update the UI - wait for the user to enter the SMS code
-                      //       late String smsCode;
-
-                      //       await showDialog(
-                      //         context: context,
-                      //         builder: (context) => Column(
-                      //           children: [
-                      //             OtpTextField(
-                      //               numberOfFields: 6,
-                      //               borderColor: Theme.of(context).accentColor,
-                      //               //set to true to show as box or false to show as dash
-                      //               showFieldAsBox: true,
-                      //               //runs when a code is typed in
-                      //               onCodeChanged: (String code) {
-                      //                 //handle validation or checks here
-                      //               },
-                      //               //runs when every textfield is filled
-                      //               onSubmit: (String verificationCode) {
-                      //                 showDialog(
-                      //                   context: context,
-                      //                   builder: (context) {
-                      //                     setState(() {
-                      //                       smsCode = verificationCode;
-                      //                     });
-                      //                     return AlertDialog(
-                      //                       title: Text("رمز التحقق"),
-                      //                       content: Text(
-                      //                           'رمز التحقق هو $verificationCode'),
-                      //                     );
-                      //                   },
-                      //                 );
-                      //               }, // end onSubmit
-                      //             ),
-                      //           ],
-                      //         ),
-                      //       ).then((value) async {
-                      //         // Create a PhoneAuthCredential with the code
-                      //         PhoneAuthCredential phoneAuthCredential =
-                      //             PhoneAuthProvider.credential(
-                      //           verificationId: verificationId,
-                      //           smsCode: smsCode,
-                      //         );
-
-                      //         // Sign the user in (or link) with the credential
-                      //         await auth
-                      //             .signInWithCredential(phoneAuthCredential)
-                      //             .then(
-                      //           (value) {
-                      //             final user = UserModel(
-                      //               id: value.user!.uid,
-                      //               name: nameController.text,
-                      //               username: phoneController.text,
-                      //               phoneNumber: phoneController.text,
-                      //               location: addressController.text,
-                      //               password: passwordController.text,
-                      //             ).toJson();
-
-                      //             users.add(user).then(
-                      //               (value) async {
-                      //                 final prefs =
-                      //                     await SharedPreferences.getInstance();
-
-                      //                 prefs.setString(
-                      //                   'user',
-                      //                   jsonEncode(user),
-                      //                 );
-
-                      //                 WidgetsBinding.instance
-                      //                     .addPostFrameCallback(
-                      //                   (timeStamp) {
-                      //                     Navigator.push(
-                      //                       context,
-                      //                       MaterialPageRoute(
-                      //                         builder: (context) =>
-                      //                             const StoreBooksPage(),
-                      //                       ),
-                      //                     );
-                      //                   },
-                      //                 );
-                      //               },
-                      //             );
-                      //           },
-                      //         );
-                      //       });
-                      //     },
-                      //     timeout: const Duration(seconds: 60),
-                      //     codeAutoRetrievalTimeout: (String verificationId) {},
-                      //   );
-                      // }
-                    },
-                  ),
+                                            WidgetsBinding.instance
+                                                .addPostFrameCallback(
+                                              (timeStamp) {
+                                                Navigator.pop(context);
+                                                Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        const StoreBooksPage(),
+                                                  ),
+                                                );
+                                              },
+                                            );
+                                          },
+                                        );
+                                      },
+                                    );
+                                  });
+                                },
+                                timeout: const Duration(seconds: 60),
+                                codeAutoRetrievalTimeout:
+                                    (String verificationId) {},
+                              );
+                            }
+                          },
+                        ),
                   SizedBox(
                     height: 40.h,
                   ),

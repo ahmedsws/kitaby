@@ -2,6 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:kitaby/features/authentication/presentation/pages/signup_page.dart';
+import 'package:kitaby/features/home/presentation/pages/cart_page.dart';
 import 'package:kitaby/features/home/presentation/pages/home_page.dart';
 import 'package:kitaby/features/store_books/presentation/pages/store_books_page.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -37,7 +38,7 @@ class AppBase extends StatelessWidget {
             ),
             textTheme: GoogleFonts.tajawalTextTheme(),
           ),
-          home: const StoreBooksPage(),
+          home: const Cart(),
         );
       },
     );

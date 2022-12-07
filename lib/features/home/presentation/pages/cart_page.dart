@@ -1,15 +1,29 @@
 import 'dart:ffi';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:kitaby/features/home/presentation/widgets/cart_item.dart';
 import 'package:kitaby/utils/constants.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-class Cart extends StatelessWidget {
+import '../../../store_books/models/book_model.dart';
+
+class Cart extends StatefulWidget {
   const Cart({Key? key}) : super(key: key);
 
   @override
+  State<Cart> createState() => _CartState();
+}
+
+class _CartState extends State<Cart> {
+  // const Cart({Key? key}) : super(key: key);
+  var paymethod = ' ';
+
+  @override
   Widget build(BuildContext context) {
+    CollectionReference cart = FirebaseFirestore.instance.collection('Users').doc('960aFXZwepWCzLXkUWAp').collection('Cart').doc('hhh').collection('Cart_Item');
+    CollectionReference books = FirebaseFirestore.instance.collection('Books');
     return Directionality(
         textDirection: TextDirection.rtl,
         child: Scaffold(
@@ -39,149 +53,51 @@ class Cart extends StatelessWidget {
                   Container(
                     height: 413.h,
                     child: SingleChildScrollView(
-                      child: Column(
-                        children: [
-                      ...List.generate(
-                        10,
-                      (index) => Column(
-                        children: [
-                          Container(
-                            width: 325.w,
-                            height: 131.h,
-                            margin: EdgeInsets.only(left: 15.w),
-                            decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(8),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.grey.withOpacity(.1),
-                                    spreadRadius: 1,
-                                    blurRadius: 20,
-                                    offset: Offset(0, 0),
-                                  ),
-                                ]),
-                            child: Row(
-                              children: [
-                                Container(
-                                  padding: EdgeInsets.only(left: 19.w),
-                                  clipBehavior: Clip.antiAlias,
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                  child: Image.asset(
-                                    'assets/images/الكتاب1.jpg',
-                                    width: 77.w,
-                                    height: 111.h,
-                                  ),
-                                ),
+                      child:  FutureBuilder(
+                        future: cart.get(),
+                        builder: (context,  snapshot) {
+                          return snapshot.connectionState == ConnectionState.done ?
+
                                 Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    SizedBox(
-                                      height: 19.h,
-                                    ),
-                                    Text(
-                                      'معني الحياة',
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .bodyLarge!
-                                          .copyWith(
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 16.sp,
-                                          ),
-                                    ),
-                                    SizedBox(
-                                      height: 11.h,
-                                    ),
-                                    Text(
-                                      'عبد الله الوهيبي',
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .bodyLarge!
-                                          .copyWith(
-                                            fontSize: 12.sp,
-                                            color: Colors.grey,
-                                          ),
-                                    ),
-                                    SizedBox(
-                                      height: 17.h,
-                                    ),
-                                    Container(
-                                      child: Text(
-                                        '60 د.ل',
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .bodyLarge!
-                                            .copyWith(
-                                              fontSize: 12.sp,
-                                              fontWeight: FontWeight.bold,
-                                            ),
+                                 children: [
+                                   ...snapshot.data!.docs.map(
+                                           (doc) { Map<String, dynamic> data =
+                                            doc.data() as Map<String, dynamic>;
+                                             // final bookitem = books.doc(data['book_isbn']).get();
+                                             // final book = BookModel.fromJson();
+
+                                       return FutureBuilder(
+                                         future: books.doc(data['book_isbn']).get(),
+                                         builder: (context,  snapshot) {
+                                           final book = BookModel.fromJson(snapshot.data!.data()! as Map<String, dynamic>);
+                                           return snapshot.connectionState == ConnectionState.done ?
+
+                                             Column(
+                                               children: [
+                                                 CartItem(book: book, qua: data['quantity']),
+                                                 SizedBox(
+                                                   width: 26.w,
+                                                 ),
+                                               ],
+                                             )
+                                           : const Center(
+                                             child: CircularProgressIndicator(),
+                                           );
+
+                                         });
+                                       }),
+                                 ],
+                                ): const Center(
+                                child: CircularProgressIndicator(),
+                          );
+                                      }
                                       ),
-                                    ),
-                                  ],
-                                ),
-                                SizedBox(
-                                  width: 120.w,
-                                ),
-                                Container(
-                                  width: 29.w,
-                                  height: 90.h,
-                                  decoration: BoxDecoration(
-                                      color: Colors.white,
-                                      borderRadius: BorderRadius.circular(8),
-                                      boxShadow: [
-                                        BoxShadow(
-                                          color: Colors.grey.withOpacity(.1),
-                                          spreadRadius: 1,
-                                          blurRadius: 20,
-                                          offset: Offset(0, 0),
-                                        ),
-                                      ]),
-                                  child: Column(
-                                    children: [
-                                      SizedBox(
-                                        height: 9.h,
-                                      ),
-                                      Stack(alignment: Alignment.center, children: [
-                                        Image.asset('assets/images/Ellipse 1.png'),
-                                        Image.asset(
-                                            'assets/images/Rectangle 24.png'),
-                                        Image.asset(
-                                            'assets/images/Rectangle 25.png'),
-                                      ]),
-                                      SizedBox(
-                                        height: 9.h,
-                                      ),
-                                      Text('2',
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .bodyLarge!
-                                              .copyWith(
-                                                color: Color(0xFF949494),
-                                              )),
-                                      SizedBox(
-                                        height: 4.h,
-                                      ),
-                                      Stack(alignment: Alignment.center, children: [
-                                        Image.asset('assets/images/Ellipse 1.png'),
-                                        Image.asset(
-                                            'assets/images/Rectangle 25.png'),
-                                      ]),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          SizedBox(
-                            height: 10.h,
-                          ),
-                        ],
+
+
+
                       ),
-                        ),
-                        ],
-              ),
-                    ),
+
+
                   ),
                     SizedBox(
                   height: 27.h,
@@ -198,12 +114,18 @@ class Cart extends StatelessWidget {
                               SimpleDialogOption(
                                 onPressed: () {
                                   Navigator.of(context).pop();
+                                  setState(() {
+                                    paymethod = 'عند التوصيل';
+                                  });
                                 },
                                 child: const Text('عند التوصيل'),
                               ),
                               SimpleDialogOption(
                                 onPressed: () {
                                   Navigator.of(context).pop();
+                                  setState(() {
+                                    paymethod = 'إلكتروني';
+                                  });
                                 },
                                 child: const Text('إلكتروني'),
                               ),
@@ -245,10 +167,10 @@ class Cart extends StatelessWidget {
                                   ),
                         ),
                         SizedBox(
-                          width: 144.w,
+                          width: 124.w,
                         ),
                         Text(
-                          'إلكتروني',
+                          paymethod,
                           style:
                               Theme.of(context).textTheme.bodySmall!.copyWith(
                                     fontSize: 12.sp,

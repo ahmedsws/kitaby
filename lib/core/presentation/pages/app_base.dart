@@ -39,7 +39,9 @@ class AppBase extends StatelessWidget {
             ),
             textTheme: GoogleFonts.tajawalTextTheme(),
           ),
+
           home: const HomePage(),
+
         );
       },
     );

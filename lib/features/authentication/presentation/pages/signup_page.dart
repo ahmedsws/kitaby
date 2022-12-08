@@ -10,6 +10,7 @@ import 'package:kitaby/features/store_books/presentation/pages/store_books_page.
 import 'package:kitaby/utils/constants.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../../../core/presentation/widgets/base_app_bar.dart';
+import '../../../../core/presentation/widgets/base_flushbar.dart';
 import '../widgets/input_box_column.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_otp_text_field/flutter_otp_text_field.dart';
@@ -31,8 +32,6 @@ class _SignupPageState extends State<SignupPage> {
   final _formKey = GlobalKey<FormState>();
 
   bool isRegistiring = false;
-
-  
 
   @override
   void initState() {
@@ -133,115 +132,11 @@ class _SignupPageState extends State<SignupPage> {
                                   phoneController.text.substring(1);
 
                               await FirebaseAuth.instance.verifyPhoneNumber(
-                                phoneNumber: '+218$phoneNumber',
-                                verificationCompleted:
-                                    (PhoneAuthCredential credential) async {
-                                  await auth
-                                      .signInWithCredential(credential)
-                                      .then(
-                                    (value) {
-                                      final user = UserModel(
-                                        id: value.user!.uid,
-                                        name: nameController.text,
-                                        username: phoneController.text,
-                                        phoneNumber: phoneController.text,
-                                        location: addressController.text,
-                                        password: passwordController.text,
-                                      ).toJson();
-
-                                      users.add(user).then(
-                                        (value) async {
-                                          final prefs = await SharedPreferences
-                                              .getInstance();
-
-                                          prefs.setString(
-                                            'user',
-                                            jsonEncode(user),
-                                          );
-
-                                          WidgetsBinding.instance
-                                              .addPostFrameCallback(
-                                            (timeStamp) {
-                                              Navigator.push(
-                                                context,
-                                                MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      const StoreBooksPage(),
-                                                ),
-                                              );
-                                            },
-                                          );
-                                        },
-                                      );
-                                    },
-                                  );
-                                },
-                                verificationFailed: (FirebaseAuthException e) {
-                                  if (e.code == 'invalid-phone-number') {
-                                    print(
-                                        'The provided phone number is not valid.');
-                                  }
-                                },
-                                codeSent: (String verificationId,
-                                    int? resendToken) async {
-                                  // Update the UI - wait for the user to enter the SMS code
-                                  late String smsCode;
-                                  await showModalBottomSheet(
-                                    context: context,
-                                    isScrollControlled: true,
-                                    builder: (context) => Container(
-                                      height: 500.h,
-                                      color: Theme.of(context).primaryColor,
-                                      child: Column(
-                                        children: [
-                                          SizedBox(
-                                            height: 30.h,
-                                          ),
-                                          Center(
-                                            child: OtpTextField(
-                                              numberOfFields: 6,
-                                              borderColor:
-                                                  Theme.of(context).accentColor,
-                                              decoration: InputDecoration(
-                                                border: OutlineInputBorder(
-                                                  borderSide: BorderSide(
-                                                    color: Theme.of(context)
-                                                        .accentColor,
-                                                  ),
-                                                ),
-                                              ),
-                                              //set to true to show as box or false to show as dash
-                                              showFieldAsBox: true,
-                                              //runs when a code is typed in
-                                              onCodeChanged: (String code) {
-                                                //handle validation or checks here
-                                              },
-                                              //runs when every textfield is filled
-                                              onSubmit:
-                                                  (String verificationCode) {
-                                                setState(
-                                                  () {
-                                                    smsCode = verificationCode;
-                                                  },
-                                                );
-                                              }, // end onSubmit
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ).then((value) async {
-                                    // Create a PhoneAuthCredential with the code
-                                    PhoneAuthCredential phoneAuthCredential =
-                                        PhoneAuthProvider.credential(
-                                      verificationId: verificationId,
-                                      smsCode: smsCode,
-                                    );
-
-                                    // Sign the user in (or link) with the credential
+                                  phoneNumber: '+218$phoneNumber',
+                                  verificationCompleted:
+                                      (PhoneAuthCredential credential) async {
                                     await auth
-                                        .signInWithCredential(
-                                            phoneAuthCredential)
+                                        .signInWithCredential(credential)
                                         .then(
                                       (value) {
                                         final user = UserModel(
@@ -267,7 +162,6 @@ class _SignupPageState extends State<SignupPage> {
                                             WidgetsBinding.instance
                                                 .addPostFrameCallback(
                                               (timeStamp) {
-                                                Navigator.pop(context);
                                                 Navigator.push(
                                                   context,
                                                   MaterialPageRoute(
@@ -281,12 +175,130 @@ class _SignupPageState extends State<SignupPage> {
                                         );
                                       },
                                     );
+                                  },
+                                  verificationFailed:
+                                      (FirebaseAuthException e) {
+                                    if (e.code == 'invalid-phone-number') {
+                                      buildBaseFlushBar(
+                                        titleText: 'خطأ في رقم الهاتف',
+                                        context: context,
+                                      );
+                                    }
+                                  },
+                                  codeSent: (String verificationId,
+                                      int? resendToken) async {
+                                    // Update the UI - wait for the user to enter the SMS code
+                                    late String smsCode;
+                                    await showModalBottomSheet(
+                                      context: context,
+                                      isScrollControlled: true,
+                                      builder: (context) => Container(
+                                        height: 500.h,
+                                        color: Theme.of(context).primaryColor,
+                                        child: Column(
+                                          children: [
+                                            SizedBox(
+                                              height: 30.h,
+                                            ),
+                                            Center(
+                                              child: OtpTextField(
+                                                numberOfFields: 6,
+                                                borderColor: Theme.of(context)
+                                                    .accentColor,
+                                                decoration: InputDecoration(
+                                                  border: OutlineInputBorder(
+                                                    borderSide: BorderSide(
+                                                      color: Theme.of(context)
+                                                          .accentColor,
+                                                    ),
+                                                  ),
+                                                ),
+                                                //set to true to show as box or false to show as dash
+                                                showFieldAsBox: true,
+                                                //runs when a code is typed in
+                                                onCodeChanged: (String code) {
+                                                  //handle validation or checks here
+                                                },
+                                                //runs when every textfield is filled
+                                                onSubmit:
+                                                    (String verificationCode) {
+                                                  setState(
+                                                    () {
+                                                      smsCode =
+                                                          verificationCode;
+                                                    },
+                                                  );
+                                                }, // end onSubmit
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ).then((value) async {
+                                      // Create a PhoneAuthCredential with the code
+                                      PhoneAuthCredential phoneAuthCredential =
+                                          PhoneAuthProvider.credential(
+                                        verificationId: verificationId,
+                                        smsCode: smsCode,
+                                      );
+
+                                      // Sign the user in (or link) with the credential
+                                      await auth
+                                          .signInWithCredential(
+                                              phoneAuthCredential)
+                                          .then(
+                                        (value) {
+                                          final user = UserModel(
+                                            id: value.user!.uid,
+                                            name: nameController.text,
+                                            username: phoneController.text,
+                                            phoneNumber: phoneController.text,
+                                            location: addressController.text,
+                                            password: passwordController.text,
+                                          ).toJson();
+
+                                          users
+                                              .doc(phoneController.text)
+                                              .set(user)
+                                              .then(
+                                            (value) async {
+                                              final prefs =
+                                                  await SharedPreferences
+                                                      .getInstance();
+
+                                              prefs.setString(
+                                                'user',
+                                                jsonEncode(user),
+                                              );
+
+                                              WidgetsBinding.instance
+                                                  .addPostFrameCallback(
+                                                (timeStamp) {
+                                                  Navigator.pop(context);
+                                                  Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          const StoreBooksPage(),
+                                                    ),
+                                                  );
+                                                },
+                                              );
+                                            },
+                                          );
+                                        },
+                                      );
+                                    });
+                                  },
+                                  timeout: const Duration(seconds: 60),
+                                  codeAutoRetrievalTimeout:
+                                      (String verificationId) {
+                                    buildBaseFlushBar(
+                                      titleText:
+                                          'انتهى وقت استرجاع كلمة التحقق',
+                                      context: context,
+                                    );
                                   });
-                                },
-                                timeout: const Duration(seconds: 60),
-                                codeAutoRetrievalTimeout:
-                                    (String verificationId) {},
-                              );
                             }
                           },
                         ),

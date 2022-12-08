@@ -1,6 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:kitaby/features/authentication/presentation/pages/login_page.dart';
 import 'package:kitaby/features/authentication/presentation/pages/signup_page.dart';
 import 'package:kitaby/features/home/presentation/pages/cart_page.dart';
 import 'package:kitaby/features/home/presentation/pages/home_page.dart';
@@ -38,7 +39,9 @@ class AppBase extends StatelessWidget {
             ),
             textTheme: GoogleFonts.tajawalTextTheme(),
           ),
-          home: const Cart(),
+
+          home: const HomePage(),
+
         );
       },
     );

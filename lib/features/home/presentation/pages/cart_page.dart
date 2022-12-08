@@ -7,6 +7,7 @@ import 'package:kitaby/features/home/presentation/widgets/cart_item.dart';
 import 'package:kitaby/utils/constants.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
+
 import '../../../store_books/models/book_model.dart';
 
 class Cart extends StatefulWidget {
@@ -19,6 +20,7 @@ class Cart extends StatefulWidget {
 class _CartState extends State<Cart> {
   // const Cart({Key? key}) : super(key: key);
   var paymethod = ' ';
+
 
   @override
   Widget build(BuildContext context) {
@@ -53,6 +55,7 @@ class _CartState extends State<Cart> {
                   Container(
                     height: 413.h,
                     child: SingleChildScrollView(
+
                       child:  FutureBuilder(
                         future: cart.get(),
                         builder: (context,  snapshot) {
@@ -177,14 +180,13 @@ class _CartState extends State<Cart> {
                                   ),
                         ),
                       ],
+
                     ),
                   ),
-                    ),
-                    SizedBox(
-                  height: 37.h,
-                    ),
-                    SingleChildScrollView(
-                  child: Container(
+                  SizedBox(
+                    height: 37.h,
+                  ),
+                  Container(
                     width: MediaQuery.of(context).size.width,
                     height: 140.h,
                     decoration: BoxDecoration(
@@ -246,40 +248,8 @@ class _CartState extends State<Cart> {
                       ],
                     ),
                   ),
-                    ),
                 ],
               )
             ]))));
   }
-
-// Future<void> _showSimpleDialog() async {
-//   await showDialog<void>(
-//       context: context,
-//       builder: (BuildContext context) {
-//         return SimpleDialog( // <-- SEE HERE
-//           title: const Text('Select Booking Type'),
-//           children: <Widget>[
-//             SimpleDialogOption(
-//               onPressed: () {
-//                 Navigator.of(context).pop();
-//               },
-//               child: const Text('General'),
-//             ),
-//             SimpleDialogOption(
-//               onPressed: () {
-//                 Navigator.of(context).pop();
-//               },
-//               child: const Text('Silver'),
-//             ),
-//             SimpleDialogOption(
-//               onPressed: () {
-//                 Navigator.of(context).pop();
-//               },
-//               child: const Text('Gold'),
-//             ),
-//           ],
-//         );
-//       });
-// }
-// --- Button Widget --- //
 }

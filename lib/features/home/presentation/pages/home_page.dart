@@ -11,9 +11,9 @@ import 'package:kitaby/features/store_books/models/book_model.dart';
 import 'package:kitaby/utils/constants.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../../authentication/presentation/pages/login_page.dart';
+
 class HomePage extends StatefulWidget {
-
-
   const HomePage({super.key});
 
   @override
@@ -28,6 +28,7 @@ class _HomePageState extends State<HomePage> {
 
     if (result != null) {
       final value = jsonDecode(result);
+      await prefs.remove('user');
 
       return UserModel.fromJson(value);
     }
@@ -54,42 +55,45 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     CollectionReference books = FirebaseFirestore.instance.collection('Books');
+
     return Directionality(
       textDirection: TextDirection.rtl,
       child: Scaffold(
         appBar: PreferredSize(
           child: SafeArea(
             child: Padding(
-              padding: EdgeInsets.symmetric(vertical: 10.h),
+              padding: EdgeInsets.symmetric(vertical: 16.h, horizontal: 16.w),
               child: Row(
                 children: [
-                  Row(
-                    children: [
-                      SizedBox(
-                        width: 25.w,
-                      ),
-                      Container(
-                        clipBehavior: Clip.antiAlias,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: Image.asset(
-                          'assets/images/pp.jpg',
-                          width: 32.w,
-                          height: 33.h,
-                        ),
-                      ),
-                    ],
-                  ),
+                  Icon(Icons.menu),
                   SizedBox(
-                    width: 17.w,
+                    width: 15.w,
                   ),
                   FutureBuilder(
-                      future: getUser(),
-                      builder: (context, snapshot) {
-                        return snapshot.data == null
-                            ? Text(
-                                'مرحبا أحمد!',
+                    future: getUser(),
+                    builder: (context, snapshot) {
+                      return snapshot.data != null
+                          ? Text(
+                              'مرحبا ${snapshot.data!.name}',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyText1!
+                                  .copyWith(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 14.sp,
+                                  ),
+                            )
+                          : GestureDetector(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => LoginPage(),
+                                  ),
+                                );
+                              },
+                              child: Text(
+                                'تسجيل الدخول',
                                 style: Theme.of(context)
                                     .textTheme
                                     .bodyText1!
@@ -97,18 +101,10 @@ class _HomePageState extends State<HomePage> {
                                       fontWeight: FontWeight.bold,
                                       fontSize: 14.sp,
                                     ),
-                              )
-                            : Text(
-                                'مرحبا !',
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .bodyText1!
-                                    .copyWith(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 14.sp,
-                                    ),
-                              );
-                      }),
+                              ),
+                            );
+                    },
+                  ),
                 ],
               ),
             ),
@@ -138,14 +134,14 @@ class _HomePageState extends State<HomePage> {
                 SingleChildScrollView(
                   scrollDirection: Axis.horizontal,
                   child: FutureBuilder(
-                    future: books.orderBy('ISBN').limitToLast(2).get(),
-                    builder: (context, snapshot) {
-                      return snapshot.connectionState == ConnectionState.done ?
-                        Row(
-                        children: [
-                          ...snapshot.data!.docs.map(
-                                  (doc) { Map<String, dynamic> data =
-                                      doc.data() as Map<String, dynamic>;
+                      future: books.orderBy('ISBN').limitToLast(2).get(),
+                      builder: (context, snapshot) {
+                        return snapshot.connectionState == ConnectionState.done
+                            ? Row(
+                                children: [
+                                  ...snapshot.data!.docs.map((doc) {
+                                    Map<String, dynamic> data =
+                                        doc.data() as Map<String, dynamic>;
                                     final book = BookModel.fromJson(data);
                                     return Row(
                                       children: [
@@ -155,15 +151,13 @@ class _HomePageState extends State<HomePage> {
                                         ),
                                       ],
                                     );
-                          }),
-
-
-                        ],
-                        ): const Center(
-                        child: CircularProgressIndicator(),
-                      );
-                    }
-                  ),
+                                  }),
+                                ],
+                              )
+                            : const Center(
+                                child: CircularProgressIndicator(),
+                              );
+                      }),
                 ),
                 SizedBox(
                   height: 38.h,
@@ -171,45 +165,46 @@ class _HomePageState extends State<HomePage> {
                 Container(
                     margin: EdgeInsets.only(left: 16.w, right: 20.w),
                     child: Divider()),
-
-                SizedBox(height: 39.h,),
-                Text('جديد',
-                style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 24.sp,
-                ),),
-                SizedBox(height: 22.h,),
-                   Column(
-                     children:[
-                     FutureBuilder(
-                         future: books.orderBy('ISBN', descending: true).get(),
-                         builder: (context, snapshot) {
-                           return snapshot.connectionState == ConnectionState.done ?
-                           Column(
-                             children: [
-                               ...snapshot.data!.docs.map(
-                                       (doc) { Map<String, dynamic> data =
-                                   doc.data() as Map<String, dynamic>;
-                                   final book = BookModel.fromJson(data);
-                                   return Column(
-                                     children: [
-                                       BooksRow(book: book),
-                                       SizedBox(height: 9.h,),
-                                     ],
-                                   );
-                                   }),
-
-
-                             ],
-                           ): const Center(
-                             child: CircularProgressIndicator(),
-                           );
-                         }
-                     ),
-
-
-                  ]),
-
+                SizedBox(
+                  height: 39.h,
+                ),
+                Text(
+                  'جديد',
+                  style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 24.sp,
+                      ),
+                ),
+                SizedBox(
+                  height: 22.h,
+                ),
+                Column(children: [
+                  FutureBuilder(
+                      future: books.orderBy('ISBN', descending: true).get(),
+                      builder: (context, snapshot) {
+                        return snapshot.connectionState == ConnectionState.done
+                            ? Column(
+                                children: [
+                                  ...snapshot.data!.docs.map((doc) {
+                                    Map<String, dynamic> data =
+                                        doc.data() as Map<String, dynamic>;
+                                    final book = BookModel.fromJson(data);
+                                    return Column(
+                                      children: [
+                                        BooksRow(book: book),
+                                        SizedBox(
+                                          height: 9.h,
+                                        ),
+                                      ],
+                                    );
+                                  }),
+                                ],
+                              )
+                            : const Center(
+                                child: CircularProgressIndicator(),
+                              );
+                      }),
+                ]),
               ],
             ),
           ),

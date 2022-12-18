@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../../../../core/presentation/widgets/containers_decoration.dart';
-import '../../../../utils/constants.dart';
+import 'containers_decoration.dart';
+import '../../../utils/constants.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class InputBoxColumn extends StatelessWidget {

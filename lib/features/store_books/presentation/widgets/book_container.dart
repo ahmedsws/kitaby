@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:kitaby/features/store_books/models/book_model.dart';
+import 'package:kitaby/core/data/models/book_model.dart';
 import 'package:kitaby/features/store_books/presentation/pages/store_book_details_page.dart';
 import 'package:kitaby/utils/constants.dart';
 

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:kitaby/features/store_books/models/book_model.dart';
+import 'package:kitaby/core/presentation/widgets/base_progress_indicator.dart';
+import 'package:kitaby/features/authentication/data/models/user_model.dart';
+import 'package:kitaby/core/data/models/book_model.dart';
 import 'package:kitaby/utils/constants.dart';
 import '../../../../core/presentation/widgets/base_app_bar.dart';
 import '../widgets/book_container.dart';
@@ -8,7 +10,9 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class StoreBooksPage extends StatefulWidget {
-  const StoreBooksPage({super.key});
+  const StoreBooksPage({super.key, this.user});
+
+  final UserModel? user;
 
   @override
   State<StoreBooksPage> createState() => _StoreBooksPageState();
@@ -96,9 +100,7 @@ class _StoreBooksPageState extends State<StoreBooksPage> {
                                     ),
                                   ],
                                 )
-                              : const Center(
-                                  child: CircularProgressIndicator(),
-                                );
+                              : const BaseProgressIndicator();
                         },
                       ),
                     );

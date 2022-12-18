@@ -4,10 +4,13 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:kitaby/core/presentation/widgets/base_progress_indicator.dart';
+import 'package:kitaby/features/customer_store/presentation/pages/add_book_form.dart';
 import 'package:kitaby/features/home/presentation/widgets/books_column.dart';
-import 'package:kitaby/features/authentication/repository/models/user_model.dart';
+import 'package:kitaby/features/authentication/data/models/user_model.dart';
 import 'package:kitaby/features/home/presentation/widgets/books_row.dart';
-import 'package:kitaby/features/store_books/models/book_model.dart';
+import 'package:kitaby/core/data/models/book_model.dart';
+import 'package:kitaby/features/store_books/presentation/pages/store_book_details_page.dart';
 import 'package:kitaby/utils/constants.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -28,7 +31,6 @@ class _HomePageState extends State<HomePage> {
 
     if (result != null) {
       final value = jsonDecode(result);
-      await prefs.remove('user');
 
       return UserModel.fromJson(value);
     }
@@ -59,58 +61,82 @@ class _HomePageState extends State<HomePage> {
     return Directionality(
       textDirection: TextDirection.rtl,
       child: Scaffold(
-        appBar: PreferredSize(
-          child: SafeArea(
-            child: Padding(
-              padding: EdgeInsets.symmetric(vertical: 16.h, horizontal: 16.w),
-              child: Row(
-                children: [
-                  Icon(Icons.menu),
-                  SizedBox(
-                    width: 15.w,
-                  ),
-                  FutureBuilder(
-                    future: getUser(),
-                    builder: (context, snapshot) {
-                      return snapshot.data != null
-                          ? Text(
-                              'مرحبا ${snapshot.data!.name}',
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .bodyText1!
-                                  .copyWith(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 14.sp,
-                                  ),
-                            )
-                          : GestureDetector(
-                              onTap: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => LoginPage(),
-                                  ),
-                                );
-                              },
-                              child: Text(
-                                'تسجيل الدخول',
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .bodyText1!
-                                    .copyWith(
+        drawer: Drawer(
+          child: ListView(
+            padding: EdgeInsets.zero,
+            children: [
+              DrawerHeader(
+                decoration: BoxDecoration(
+                  color: Theme.of(context).accentColor,
+                ),
+                child: const SizedBox(),
+              ),
+              ListTile(
+                title: Text(
+                  'إضافة كتاب وتسويقه',
+                  style: Theme.of(context).textTheme.bodyText1!.copyWith(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16.sp,
+                      ),
+                ),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const AddBookForm(),
+                    ),
+                  );
+                },
+              ),
+              FutureBuilder(
+                future: getUser(),
+                builder: (context, snapshot) {
+                  return snapshot.data != null
+                      ? ListTile(
+                          title: Text(
+                            'تسجيل خروج',
+                            style:
+                                Theme.of(context).textTheme.bodyText1!.copyWith(
                                       fontWeight: FontWeight.bold,
-                                      fontSize: 14.sp,
+                                      fontSize: 16.sp,
                                     ),
+                          ),
+                          onTap: () async {
+                            final prefs = await SharedPreferences.getInstance();
+
+                            await prefs.remove('user');
+
+                            WidgetsBinding.instance.addPostFrameCallback(
+                              (_) {
+                                Navigator.pop(context);
+                              },
+                            );
+                          },
+                        )
+                      : ListTile(
+                          title: Text(
+                            'تسجيل دخول',
+                            style:
+                                Theme.of(context).textTheme.bodyText1!.copyWith(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16.sp,
+                                    ),
+                          ),
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const LoginPage(),
                               ),
                             );
-                    },
-                  ),
-                ],
+                          },
+                        );
+                },
               ),
-            ),
+            ],
           ),
-          preferredSize: AppBar().preferredSize,
         ),
+        appBar: AppBar(),
         body: SingleChildScrollView(
           child: Container(
             padding: EdgeInsets.only(right: 25.w),
@@ -134,37 +160,49 @@ class _HomePageState extends State<HomePage> {
                 SingleChildScrollView(
                   scrollDirection: Axis.horizontal,
                   child: FutureBuilder(
-                      future: books.orderBy('ISBN').limitToLast(2).get(),
+                      future: books.orderBy('ISBN').get(),
                       builder: (context, snapshot) {
                         return snapshot.connectionState == ConnectionState.done
                             ? Row(
                                 children: [
-                                  ...snapshot.data!.docs.map((doc) {
-                                    Map<String, dynamic> data =
-                                        doc.data() as Map<String, dynamic>;
-                                    final book = BookModel.fromJson(data);
-                                    return Row(
-                                      children: [
-                                        BooksColumn(book: book),
-                                        SizedBox(
-                                          width: 26.w,
-                                        ),
-                                      ],
-                                    );
-                                  }),
+                                  ...snapshot.data!.docs.map(
+                                    (doc) {
+                                      Map<String, dynamic> data =
+                                          doc.data() as Map<String, dynamic>;
+                                      final book = BookModel.fromJson(data);
+                                      return Row(
+                                        children: [
+                                          InkWell(
+                                              onTap: () {
+                                                Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        StoreBookDetailsPage(
+                                                            book: book),
+                                                  ),
+                                                );
+                                              },
+                                              child: BooksColumn(book: book)),
+                                          SizedBox(
+                                            width: 26.w,
+                                          ),
+                                        ],
+                                      );
+                                    },
+                                  ),
                                 ],
                               )
-                            : const Center(
-                                child: CircularProgressIndicator(),
-                              );
+                            : const BaseProgressIndicator();
                       }),
                 ),
                 SizedBox(
                   height: 38.h,
                 ),
                 Container(
-                    margin: EdgeInsets.only(left: 16.w, right: 20.w),
-                    child: Divider()),
+                  margin: EdgeInsets.only(left: 16.w, right: 20.w),
+                  child: const Divider(),
+                ),
                 SizedBox(
                   height: 39.h,
                 ),
@@ -178,8 +216,9 @@ class _HomePageState extends State<HomePage> {
                 SizedBox(
                   height: 22.h,
                 ),
-                Column(children: [
-                  FutureBuilder(
+                Column(
+                  children: [
+                    FutureBuilder(
                       future: books.orderBy('ISBN', descending: true).get(),
                       builder: (context, snapshot) {
                         return snapshot.connectionState == ConnectionState.done
@@ -191,7 +230,18 @@ class _HomePageState extends State<HomePage> {
                                     final book = BookModel.fromJson(data);
                                     return Column(
                                       children: [
-                                        BooksRow(book: book),
+                                        InkWell(
+                                            onTap: () {
+                                              Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      StoreBookDetailsPage(
+                                                          book: book),
+                                                ),
+                                              );
+                                            },
+                                            child: BooksRow(book: book)),
                                         SizedBox(
                                           height: 9.h,
                                         ),
@@ -200,11 +250,11 @@ class _HomePageState extends State<HomePage> {
                                   }),
                                 ],
                               )
-                            : const Center(
-                                child: CircularProgressIndicator(),
-                              );
-                      }),
-                ]),
+                            : const BaseProgressIndicator();
+                      },
+                    ),
+                  ],
+                ),
               ],
             ),
           ),

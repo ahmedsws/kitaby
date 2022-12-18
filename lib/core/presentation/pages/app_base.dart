@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:kitaby/features/authentication/presentation/pages/login_page.dart';
 import 'package:kitaby/features/authentication/presentation/pages/signup_page.dart';
-import 'package:kitaby/features/home/presentation/pages/cart_page.dart';
+import 'package:kitaby/features/cart/presentation/pages/cart_page.dart';
 import 'package:kitaby/features/home/presentation/pages/home_page.dart';
 import 'package:kitaby/features/store_books/presentation/pages/store_books_page.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -11,6 +11,7 @@ import 'package:kitaby/utils/constants.dart';
 
 import '../../../features/store_books/presentation/pages/store_book_details_page.dart';
 import '../../../firebase_options.dart';
+import 'nav_bar_base.dart';
 
 class AppBase extends StatelessWidget {
   const AppBase({super.key});
@@ -39,9 +40,7 @@ class AppBase extends StatelessWidget {
             ),
             textTheme: GoogleFonts.tajawalTextTheme(),
           ),
-
-          home: const HomePage(),
-
+          home: const NavBarBase(),
         );
       },
     );

@@ -5,13 +5,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:kitaby/core/presentation/widgets/base_button.dart';
 import 'package:kitaby/core/presentation/widgets/containers_decoration.dart';
-import 'package:kitaby/features/authentication/repository/models/user_model.dart';
+import 'package:kitaby/features/authentication/data/models/user_model.dart';
 import 'package:kitaby/features/store_books/presentation/pages/store_books_page.dart';
 import 'package:kitaby/utils/constants.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../../../../core/presentation/pages/nav_bar_base.dart';
 import '../../../../core/presentation/widgets/base_app_bar.dart';
 import '../../../../core/presentation/widgets/base_flushbar.dart';
-import '../widgets/input_box_column.dart';
+import '../../../../core/presentation/widgets/input_box_column.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_otp_text_field/flutter_otp_text_field.dart';
 
@@ -166,7 +167,7 @@ class _SignupPageState extends State<SignupPage> {
                                                   context,
                                                   MaterialPageRoute(
                                                     builder: (context) =>
-                                                        const StoreBooksPage(),
+                                                        const NavBarBase(),
                                                   ),
                                                 );
                                               },
@@ -179,10 +180,10 @@ class _SignupPageState extends State<SignupPage> {
                                   verificationFailed:
                                       (FirebaseAuthException e) {
                                     if (e.code == 'invalid-phone-number') {
-                                      buildBaseFlushBar(
-                                        titleText: 'خطأ في رقم الهاتف',
-                                        context: context,
-                                      );
+                                      // buildBaseFlushBar(
+                                      //   titleText: 'خطأ في رقم الهاتف',
+                                      //   context: context,
+                                      // );
                                     }
                                   },
                                   codeSent: (String verificationId,
@@ -279,7 +280,7 @@ class _SignupPageState extends State<SignupPage> {
                                                     context,
                                                     MaterialPageRoute(
                                                       builder: (context) =>
-                                                          const StoreBooksPage(),
+                                                          const NavBarBase(),
                                                     ),
                                                   );
                                                 },
@@ -293,11 +294,11 @@ class _SignupPageState extends State<SignupPage> {
                                   timeout: const Duration(seconds: 60),
                                   codeAutoRetrievalTimeout:
                                       (String verificationId) {
-                                    buildBaseFlushBar(
-                                      titleText:
-                                          'انتهى وقت استرجاع كلمة التحقق',
-                                      context: context,
-                                    );
+                                    // buildBaseFlushBar(
+                                    //   titleText:
+                                    //       'انتهى وقت استرجاع كلمة التحقق',
+                                    //   context: context,
+                                    // );
                                   });
                             }
                           },

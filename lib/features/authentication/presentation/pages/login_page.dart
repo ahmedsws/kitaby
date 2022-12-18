@@ -4,9 +4,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_flushbar/flutter_flushbar.dart';
+import 'package:kitaby/core/presentation/pages/nav_bar_base.dart';
 import 'package:kitaby/core/presentation/widgets/base_button.dart';
 import 'package:kitaby/features/authentication/presentation/pages/signup_page.dart';
-import 'package:kitaby/features/authentication/repository/models/user_model.dart';
+import 'package:kitaby/features/authentication/data/models/user_model.dart';
 import 'package:kitaby/features/home/presentation/pages/home_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -16,7 +17,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../../core/presentation/widgets/base_flushbar.dart';
 import '../../../../core/presentation/widgets/base_progress_indicator.dart';
 import '../../../../utils/constants.dart';
-import '../widgets/input_box_column.dart';
+import '../../../../core/presentation/widgets/input_box_column.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -86,9 +87,11 @@ class _LoginPageState extends State<LoginPage> {
                           text: 'تسجيل الدخول',
                           onPressed: () async {
                             if (_formKey.currentState!.validate()) {
-                              setState(() {
-                                isLoging = true;
-                              });
+                              setState(
+                                () {
+                                  isLoging = true;
+                                },
+                              );
                               final result = await FirebaseFirestore.instance
                                   .collection('Users')
                                   .doc(phoneController.text)
@@ -101,7 +104,7 @@ class _LoginPageState extends State<LoginPage> {
                                   final prefs =
                                       await SharedPreferences.getInstance();
 
-                                  prefs.setString(
+                                  await prefs.setString(
                                     'user',
                                     jsonEncode(user.toJson()),
                                   );
@@ -112,22 +115,22 @@ class _LoginPageState extends State<LoginPage> {
                                         context,
                                         MaterialPageRoute(
                                           builder: (context) =>
-                                              const HomePage(),
+                                              const NavBarBase(),
                                         ),
                                       );
                                     },
                                   );
                                 } else {
-                                  buildBaseFlushBar(
-                                      context: context,
-                                      titleText:
-                                          'حطأ في رقم الهاتف أو كلمة المرور!');
+                                  // buildBaseFlushBar(
+                                  //     context: context,
+                                  //     titleText:
+                                  //         'حطأ في رقم الهاتف أو كلمة المرور!');
                                 }
                               } else {
-                                buildBaseFlushBar(
-                                    context: context,
-                                    titleText:
-                                        'حطأ في رقم الهاتف أو كلمة المرور!');
+                                // buildBaseFlushBar(
+                                //     context: context,
+                                //     titleText:
+                                //         'حطأ في رقم الهاتف أو كلمة المرور!');
                               }
                             }
                           },

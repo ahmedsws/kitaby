@@ -1,25 +1,39 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:kitaby/core/presentation/widgets/base_progress_indicator.dart';
-import 'package:kitaby/features/authentication/data/models/user_model.dart';
-import 'package:kitaby/core/data/models/book_model.dart';
-import 'package:kitaby/utils/constants.dart';
+import 'package:kitaby/features/store_books/presentation/widgets/book_container.dart';
+import '../../../../core/data/models/book_model.dart';
 import '../../../../core/presentation/widgets/base_app_bar.dart';
-import '../widgets/book_container.dart';
+import '../../../../core/presentation/widgets/base_progress_indicator.dart';
+import '../../../../utils/constants.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 
-class StoreBooksPage extends StatelessWidget {
-  const StoreBooksPage({super.key});
+class CustomersBooksPage extends StatelessWidget {
+  const CustomersBooksPage({super.key});
+
+  Future<List<BookModel>> getCustomersBooks() async {
+    final users = await FirebaseFirestore.instance.collection('Users').get();
+
+    final List<BookModel> customersBooks = [];
+
+    for (var user in users.docs) {
+      final books = await user.reference.collection('Books').get();
+      for (var book in books.docs) {
+        customersBooks.add(BookModel.fromJson(book.data()));
+      }
+    }
+
+    return customersBooks;
+  }
 
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
-    CollectionReference books = FirebaseFirestore.instance.collection('Books');
+
     return Directionality(
       textDirection: TextDirection.rtl,
       child: Scaffold(
-        appBar: const BaseAppBar(title: 'كتب المتجر'),
+        appBar: const BaseAppBar(title: 'كتب الزبائن'),
         body: Padding(
           padding: EdgeInsets.symmetric(horizontal: 16.w),
           child: Column(
@@ -64,7 +78,7 @@ class StoreBooksPage extends StatelessWidget {
                         minHeight: constraints.maxHeight,
                       ),
                       child: FutureBuilder(
-                        future: books.get(),
+                        future: getCustomersBooks(),
                         builder: (context, snapshot) {
                           return snapshot.connectionState ==
                                   ConnectionState.done
@@ -74,13 +88,13 @@ class StoreBooksPage extends StatelessWidget {
                                   crossAxisSpacing: 16.w,
                                   mainAxisSpacing: 16.w,
                                   children: [
-                                    ...snapshot.data!.docs.map(
+                                    ...snapshot.data!.map(
                                       (doc) {
-                                        Map<String, dynamic> data =
-                                            doc.data() as Map<String, dynamic>;
-                                        final book = BookModel.fromJson(data);
+                                        // Map<String, dynamic> data =
+                                        //     doc.data() as Map<String, dynamic>;
+                                        // final book = BookModel.fromJson(data);
                                         return BookContainer(
-                                          book: book,
+                                          book: doc,
                                         );
                                       },
                                     ),

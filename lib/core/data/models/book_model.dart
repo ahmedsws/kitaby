@@ -27,7 +27,7 @@ class BookModel {
     required this.pageCount,
     required this.quantity,
     required this.price,
-    required this.rating,
+    this.rating = 0,
     required this.status,
     this.dealType = 'sell',
   });
@@ -45,7 +45,24 @@ class BookModel {
         pageCount = json['Page_Count'],
         quantity = json['Quantity'],
         price = json['Price'],
-        rating = 5.5, //json[''],
+        rating = 0, //json[''],
         status = json['Status'],
         dealType = 'sell'; //json[''];
+
+  Map<String, Object?> toJson() => {
+        'ISBN': isbn,
+        'Title': title,
+        'Author': author,
+        'Publisher': publisher,
+        'Edition': edition,
+        'Descreption': description,
+        'Cover_Image_url': coverImageUrl,
+        'Category': category,
+        // publicationDate = DateTime.parse(json['Publication_Date']),
+        'Page_Count': pageCount,
+        'Quantity': quantity,
+        'Price': price,
+        'Status': status,
+        'DealType': dealType,
+      };
 }

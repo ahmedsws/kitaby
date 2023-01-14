@@ -15,6 +15,7 @@ import 'package:kitaby/utils/constants.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../authentication/presentation/pages/login_page.dart';
+import '../../../customer_store/presentation/pages/customers_books_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -73,7 +74,7 @@ class _HomePageState extends State<HomePage> {
               ),
               ListTile(
                 title: Text(
-                  'إضافة كتاب وتسويقه',
+                  'كتب الزبائن',
                   style: Theme.of(context).textTheme.bodyText1!.copyWith(
                         fontWeight: FontWeight.bold,
                         fontSize: 16.sp,
@@ -83,9 +84,34 @@ class _HomePageState extends State<HomePage> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => const AddBookForm(),
+                      builder: (context) => const CustomersBooksPage(),
                     ),
                   );
+                },
+              ),
+              FutureBuilder(
+                future: getUser(),
+                builder: (context, snapshot) {
+                  return snapshot.data != null
+                      ? ListTile(
+                          title: Text(
+                            'إضافة كتاب وتسويقه',
+                            style:
+                                Theme.of(context).textTheme.bodyText1!.copyWith(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16.sp,
+                                    ),
+                          ),
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const AddBookForm(),
+                              ),
+                            );
+                          },
+                        )
+                      : const SizedBox();
                 },
               ),
               FutureBuilder(

@@ -120,19 +120,27 @@ class _SignupPageState extends State<SignupPage> {
                       : BaseButton(
                           text: 'تسجيل',
                           onPressed: () async {
-                            setState(() {
-                              isRegistiring = true;
-                            });
                             if (_formKey.currentState!.validate()) {
+                              setState(() {
+                                isRegistiring = true;
+                              });
                               FirebaseAuth auth = FirebaseAuth.instance;
                               CollectionReference users = FirebaseFirestore
                                   .instance
                                   .collection('Users');
 
-                              final String phoneNumber =
-                                  phoneController.text.substring(1);
+                              final result =
+                                  await users.doc(phoneController.text).get();
 
-                              await FirebaseAuth.instance.verifyPhoneNumber(
+                              if (result.exists) {
+                                buildBaseFlushBar(
+                                    context: context,
+                                    message: 'الحساب برقم الهاتف موجود مسبقا!');
+                              } else {
+                                final String phoneNumber =
+                                    phoneController.text.substring(1);
+
+                                await FirebaseAuth.instance.verifyPhoneNumber(
                                   phoneNumber: '+218$phoneNumber',
                                   verificationCompleted:
                                       (PhoneAuthCredential credential) async {
@@ -299,7 +307,14 @@ class _SignupPageState extends State<SignupPage> {
                                     //       'انتهى وقت استرجاع كلمة التحقق',
                                     //   context: context,
                                     // );
-                                  });
+                                  },
+                                );
+                              }
+                            } else {
+                              buildBaseFlushBar(
+                                context: context,
+                                message: 'يجب تعبئة الحقول بشكل صحيح!',
+                              );
                             }
                           },
                         ),

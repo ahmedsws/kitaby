@@ -34,7 +34,7 @@ dependencies:
   firebase_core: ^2.3.0
   shared_preferences: ^2.0.15
   flutter_otp_text_field: ^1.1.0+2
-  flutter_flushbar: ^0.0.2
+  another_flushbar: ^1.12.29
   persistent_bottom_nav_bar: ^5.0.2
   
   # firebase_in_app_messaging: ^0.7.0+7

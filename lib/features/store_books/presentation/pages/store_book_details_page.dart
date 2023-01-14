@@ -146,11 +146,6 @@ class _StoreBookDetailsPageState extends State<StoreBookDetailsPage> {
                                   "quantity": 1,
                                 },
                               );
-                              setState(
-                                () {
-                                  isAddingBook = false;
-                                },
-                              );
 
                               // buildBaseFlushBar(
                               //     context: context,
@@ -167,6 +162,11 @@ class _StoreBookDetailsPageState extends State<StoreBookDetailsPage> {
                                 },
                               );
                             }
+                            setState(
+                              () {
+                                isAddingBook = false;
+                              },
+                            );
                           },
                           text: 'إضافة إلى السلة بسعر ${widget.book.price} د.ل',
                         ),

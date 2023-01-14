@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_flushbar/flutter_flushbar.dart';
 import 'package:kitaby/core/presentation/pages/nav_bar_base.dart';
 import 'package:kitaby/core/presentation/widgets/base_button.dart';
 import 'package:kitaby/features/authentication/presentation/pages/signup_page.dart';
@@ -121,17 +120,22 @@ class _LoginPageState extends State<LoginPage> {
                                     },
                                   );
                                 } else {
-                                  // buildBaseFlushBar(
-                                  //     context: context,
-                                  //     titleText:
-                                  //         'حطأ في رقم الهاتف أو كلمة المرور!');
+                                  buildBaseFlushBar(
+                                      context: context,
+                                      message:
+                                          'حطأ في رقم الهاتف أو كلمة المرور!');
                                 }
                               } else {
-                                // buildBaseFlushBar(
-                                //     context: context,
-                                //     titleText:
-                                //         'حطأ في رقم الهاتف أو كلمة المرور!');
+                                buildBaseFlushBar(
+                                    context: context,
+                                    message:
+                                        'حطأ في رقم الهاتف أو كلمة المرور!');
                               }
+                            } else {
+                              buildBaseFlushBar(
+                                context: context,
+                                message: 'يجب تعبئة الحقول بشكل صحيح!',
+                              );
                             }
                           },
                         ),

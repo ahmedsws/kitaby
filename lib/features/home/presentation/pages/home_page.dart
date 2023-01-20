@@ -191,7 +191,13 @@ class _HomePageState extends State<HomePage> {
                         return snapshot.connectionState == ConnectionState.done
                             ? Row(
                                 children: [
-                                  ...snapshot.data!.docs.map(
+                                  ...snapshot.data!.docs.where((doc) {
+                                    Map<String, dynamic> data =
+                                        doc.data() as Map<String, dynamic>;
+                                    final book = BookModel.fromJson(data);
+                                    return book.status == true &&
+                                        book.quantity > 0;
+                                  }).map(
                                     (doc) {
                                       Map<String, dynamic> data =
                                           doc.data() as Map<String, dynamic>;
@@ -250,7 +256,15 @@ class _HomePageState extends State<HomePage> {
                         return snapshot.connectionState == ConnectionState.done
                             ? Column(
                                 children: [
-                                  ...snapshot.data!.docs.map((doc) {
+                                  ...snapshot.data!.docs.where(
+                                    (doc) {
+                                      Map<String, dynamic> data =
+                                          doc.data() as Map<String, dynamic>;
+                                      final book = BookModel.fromJson(data);
+                                      return book.status == true &&
+                                          book.quantity > 0;
+                                    },
+                                  ).map((doc) {
                                     Map<String, dynamic> data =
                                         doc.data() as Map<String, dynamic>;
                                     final book = BookModel.fromJson(data);

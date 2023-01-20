@@ -36,6 +36,8 @@ dependencies:
   flutter_otp_text_field: ^1.1.0+2
   another_flushbar: ^1.12.29
   persistent_bottom_nav_bar: ^5.0.2
+  image_picker: ^0.8.6
+  firebase_storage: ^11.0.10
   
   # firebase_in_app_messaging: ^0.7.0+7
   # firebase_messaging: ^14.1.3

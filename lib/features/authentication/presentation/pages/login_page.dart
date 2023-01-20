@@ -146,7 +146,7 @@ class _LoginPageState extends State<LoginPage> {
                     TextSpan(
                       text: 'ليس لديك حساب؟',
                       style: textTheme.bodyText2!.copyWith(
-                        color: Constants.mainFontColor,
+                        color: Constants.secondrayFontColor,
                         fontSize: 13.sp,
                         fontWeight: FontWeight.w600,
                         overflow: TextOverflow.ellipsis,
@@ -155,7 +155,7 @@ class _LoginPageState extends State<LoginPage> {
                         TextSpan(
                           text: '  تسجيل حساب',
                           style: textTheme.bodyText2!.copyWith(
-                            color: Constants.secondrayFontColor,
+                            color: Constants.mainFontColor,
                             fontSize: 13.sp,
                             fontWeight: FontWeight.w600,
                             overflow: TextOverflow.ellipsis,

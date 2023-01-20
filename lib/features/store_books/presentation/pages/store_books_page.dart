@@ -83,7 +83,9 @@ class StoreBooksPage extends StatelessWidget {
                                           book: book,
                                         );
                                       },
-                                    ),
+                                    ).where((doc) =>
+                                        doc.book.status == true &&
+                                        doc.book.quantity > 0),
                                   ],
                                 )
                               : const BaseProgressIndicator();

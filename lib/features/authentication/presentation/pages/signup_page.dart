@@ -157,7 +157,10 @@ class _SignupPageState extends State<SignupPage> {
                                           password: passwordController.text,
                                         ).toJson();
 
-                                        users.add(user).then(
+                                        users
+                                            .doc(phoneController.text)
+                                            .set(user)
+                                            .then(
                                           (value) async {
                                             final prefs =
                                                 await SharedPreferences
@@ -178,6 +181,12 @@ class _SignupPageState extends State<SignupPage> {
                                                         const NavBarBase(),
                                                   ),
                                                 );
+
+                                                buildBaseFlushBar(
+                                                  context: context,
+                                                  message:
+                                                      'تم انشاء حسابك بنجاح!',
+                                                );
                                               },
                                             );
                                           },
@@ -188,10 +197,10 @@ class _SignupPageState extends State<SignupPage> {
                                   verificationFailed:
                                       (FirebaseAuthException e) {
                                     if (e.code == 'invalid-phone-number') {
-                                      // buildBaseFlushBar(
-                                      //   titleText: 'خطأ في رقم الهاتف',
-                                      //   context: context,
-                                      // );
+                                      buildBaseFlushBar(
+                                        context: context,
+                                        message: 'خطأ في رقم الهاتف',
+                                      );
                                     }
                                   },
                                   codeSent: (String verificationId,
@@ -280,6 +289,8 @@ class _SignupPageState extends State<SignupPage> {
                                                 jsonEncode(user),
                                               );
 
+                                              // TODO رد المستخدم للهوم
+
                                               WidgetsBinding.instance
                                                   .addPostFrameCallback(
                                                 (timeStamp) {
@@ -291,6 +302,12 @@ class _SignupPageState extends State<SignupPage> {
                                                           const NavBarBase(),
                                                     ),
                                                   );
+
+                                                  buildBaseFlushBar(
+                                                    context: context,
+                                                    message:
+                                                        'تم انشاء حسابك بنجاح!',
+                                                  );
                                                 },
                                               );
                                             },
@@ -299,14 +316,13 @@ class _SignupPageState extends State<SignupPage> {
                                       );
                                     });
                                   },
-                                  timeout: const Duration(seconds: 60),
+                                  timeout: const Duration(seconds: 120),
                                   codeAutoRetrievalTimeout:
                                       (String verificationId) {
-                                    // buildBaseFlushBar(
-                                    //   titleText:
-                                    //       'انتهى وقت استرجاع كلمة التحقق',
-                                    //   context: context,
-                                    // );
+                                    buildBaseFlushBar(
+                                      message: 'انتهى وقت استرجاع كلمة التحقق',
+                                      context: context,
+                                    );
                                   },
                                 );
                               }

@@ -17,7 +17,7 @@ class FavoritesBloc extends Bloc<FavoritesEvent, FavoritesState> {
         if (user != null) {
           final favoritesSnapshot = await FirebaseFirestore.instance
               .collection('Users')
-              .doc(user.id)
+              .doc(user.phoneNumber)
               .collection('Favorites')
               .get();
 

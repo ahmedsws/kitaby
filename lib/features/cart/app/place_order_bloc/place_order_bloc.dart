@@ -1,5 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:kitaby/features/cart/models/cart_item_model.dart';
+import 'package:kitaby/features/cart/presentation/widgets/cart_item.dart';
 import 'package:meta/meta.dart';
 
 import '../../../../utils/constants.dart';
@@ -15,13 +17,9 @@ class PlaceOrderBloc extends Bloc<PlaceOrderEvent, PlaceOrderState> {
           emit(PlaceOrderLoading());
           final user = await Constants.getUser();
 
-          // if (user != null &&
-          // paymethod.isNotEmpty &&
-          // cart != null &&
-          // books != null) {
           final order = await FirebaseFirestore.instance
               .collection('Users')
-              .doc(user!.id)
+              .doc(user!.phoneNumber)
               .collection('Orders')
               .add(
             {
@@ -33,14 +31,17 @@ class PlaceOrderBloc extends Bloc<PlaceOrderEvent, PlaceOrderState> {
             },
           );
 
-          final cartItems = await event.cart.get();
+          for (var cartItem in event.cartItems) {
+            await order.collection('Order_Items').add(cartItem.toJson());
 
-          for (var cartItem in cartItems.docs) {
-            Map<String, dynamic> data = cartItem.data() as Map<String, dynamic>;
-
-            await order.collection('Order_Items').add(data);
-
-            await cartItem.reference.delete();
+            await FirebaseFirestore.instance
+                .collection('Users')
+                .doc(user.phoneNumber)
+                .collection('Cart')
+                .doc('cartDoc')
+                .collection('Cart_Items')
+                .doc(cartItem.id)
+                .delete();
           }
 
           emit(OrderPlaced());

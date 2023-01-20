@@ -6,4 +6,8 @@ class TotalPriceCounterCubit extends Cubit<num> {
   void calcTotalPrice({required num totalPrice}) {
     return emit(totalPrice += state);
   }
+
+  void resetTotolPrice() {
+    return emit(0);
+  }
 }

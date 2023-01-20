@@ -19,7 +19,7 @@ class OrdersBloc extends Bloc<OrdersEvent, OrdersState> {
 
           final result = await FirebaseFirestore.instance
               .collection('Users')
-              .doc(user!.id)
+              .doc(user!.phoneNumber)
               .collection('Orders')
               .get();
 

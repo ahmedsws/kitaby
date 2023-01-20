@@ -14,6 +14,7 @@ class InputBoxColumn extends StatelessWidget {
     this.controller,
     this.validator,
     this.maxLength,
+    this.keyboardType,
   }) : super(key: key);
 
   final String hintText, label;
@@ -22,6 +23,7 @@ class InputBoxColumn extends StatelessWidget {
   final TextEditingController? controller;
   final String? Function(String?)? validator;
   final int? maxLength;
+  final TextInputType? keyboardType;
 
   @override
   Widget build(BuildContext context) {
@@ -46,6 +48,7 @@ class InputBoxColumn extends StatelessWidget {
           decoration: containersDecoration(context),
           child: TextFormField(
             controller: controller,
+            keyboardType: keyboardType,
             decoration: InputDecoration(
               hintText: hintText,
               hintStyle: textTheme.bodyText1!.copyWith(

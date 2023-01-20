@@ -12,6 +12,9 @@ class BooksRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final bookRating =
+        book.ratings.reduce((rating, nextRating) => rating + nextRating) /
+            book.ratings.length;
     return Container(
       width: 324.w,
       height: 129.h,
@@ -24,7 +27,7 @@ class BooksRow extends StatelessWidget {
               color: Colors.grey.withOpacity(.1),
               spreadRadius: 1,
               blurRadius: 20,
-              offset: Offset(0, 0),
+              offset: const Offset(0, 0),
             ),
           ]),
       child: Row(
@@ -83,50 +86,37 @@ class BooksRow extends StatelessWidget {
                   height: 17.h,
                 ),
                 Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Image.asset(
-                      'assets/images/Star 4.png',
-                      width: 14.w,
-                      height: 14.h,
-                    ),
-                    Image.asset(
-                      'assets/images/Star 4.png',
-                      width: 14.w,
-                      height: 14.h,
-                    ),
-                    Image.asset(
-                      'assets/images/Star 4.png',
-                      width: 14.w,
-                      height: 14.h,
-                    ),
-                    Image.asset(
-                      'assets/images/Star 4.png',
-                      width: 14.w,
-                      height: 14.h,
-                    ),
-                    Image.asset(
-                      'assets/images/Star 4.png',
-                      width: 14.w,
-                      height: 14.h,
-                      color: Color(0xFFEDEDEF),
+                    ...List.generate(
+                      5,
+                      (index) {
+                        return Icon(
+                          Icons.star,
+                          size: 18.w,
+                          color: ++index <= bookRating
+                              ? const Color(0xFFFFC41F)
+                              : const Color(0xFFEDEDEF),
+                        );
+                      },
                     ),
                   ],
                 ),
               ],
             ),
           ),
-          Spacer(),
-          Column(
-            children: [
-              SizedBox(
-                height: 16.h,
-              ),
-              Image.asset('assets/images/Vector.png'),
-            ],
-          ),
-          SizedBox(
-            width: 20.w,
-          ),
+          // Spacer(),
+          // Column(
+          //   children: [
+          //     SizedBox(
+          //       height: 16.h,
+          //     ),
+          //     Image.asset('assets/images/Vector.png'),
+          //   ],
+          // ),
+          // SizedBox(
+          //   width: 20.w,
+          // ),
         ],
       ),
     );

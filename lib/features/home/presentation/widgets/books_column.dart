@@ -24,7 +24,14 @@ class BooksColumn extends StatelessWidget {
                   height: 184.h,
                   width: 117.w,
                 )
-              : Icon(Icons.book),
+              : SizedBox(
+                  height: 184.h,
+                  width: 117.w,
+                  child: Icon(
+                    Icons.book,
+                    size: 50.w,
+                  ),
+                ),
           SizedBox(
             height: 25.h,
           ),

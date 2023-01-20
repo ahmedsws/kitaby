@@ -5,10 +5,11 @@ class PlaceOrderEvent {
   const PlaceOrderEvent({
     required this.totalPrice,
     required this.paymentMethod,
-    required this.cart,
+    required this.cartItems,
   });
 
   final num totalPrice;
   final String paymentMethod;
-  final CollectionReference cart;
+
+  final List<CartItemModel> cartItems;
 }

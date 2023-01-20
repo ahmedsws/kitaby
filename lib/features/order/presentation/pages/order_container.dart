@@ -94,26 +94,26 @@ class OrderContainer extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
-                          Text(
-                            'طلب: ${order.id}',
-                            style: Theme.of(context)
-                                .textTheme
-                                .bodyLarge!
-                                .copyWith(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 16.sp,
-                                    overflow: TextOverflow.ellipsis),
-                          ),
-                          SizedBox(
-                            height: 8.32.h,
-                          ),
+                          // Text(
+                          //   'طلب: ${order.id}',
+                          //   style: Theme.of(context)
+                          //       .textTheme
+                          //       .bodyLarge!
+                          //       .copyWith(
+                          //           fontWeight: FontWeight.bold,
+                          //           fontSize: 16.sp,
+                          //           overflow: TextOverflow.ellipsis),
+                          // ),
+                          // SizedBox(
+                          //   height: 8.32.h,
+                          // ),
                           Text(
                             order.status,
                             style:
                                 Theme.of(context).textTheme.bodyLarge!.copyWith(
                                       fontWeight: FontWeight.bold,
                                       fontSize: 16.sp,
-                                      color: Color(0xff569750),
+                                      color: const Color(0xff569750),
                                     ),
                           ),
                           SizedBox(

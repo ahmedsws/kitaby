@@ -59,18 +59,20 @@ class _NavBarBaseState extends State<NavBarBase> {
       child: Scaffold(
         body: pages[currentIndex],
         bottomNavigationBar: BottomNavigationBar(
+          iconSize: 25,
           currentIndex: currentIndex,
           items: [
             BottomNavigationBarItem(
-              icon: InkWell(
-                onTap: () {
+              icon: IconButton(
+                padding: EdgeInsets.zero,
+                onPressed: () {
                   setState(
                     () {
                       currentIndex = 0;
                     },
                   );
                 },
-                child: Icon(
+                icon: Icon(
                   Icons.home_filled,
                   color: accentColor,
                 ),
@@ -78,15 +80,16 @@ class _NavBarBaseState extends State<NavBarBase> {
               label: 'home',
             ),
             BottomNavigationBarItem(
-              icon: InkWell(
-                onTap: () {
+              icon: IconButton(
+                padding: EdgeInsets.zero,
+                onPressed: () {
                   setState(
                     () {
                       currentIndex = 1;
                     },
                   );
                 },
-                child: Icon(
+                icon: Icon(
                   Icons.menu_book_rounded,
                   color: accentColor,
                 ),
@@ -94,8 +97,9 @@ class _NavBarBaseState extends State<NavBarBase> {
               label: 'books',
             ),
             BottomNavigationBarItem(
-              icon: GestureDetector(
-                onTap: () async {
+              icon: IconButton(
+                padding: EdgeInsets.zero,
+                onPressed: () async {
                   final result = await getUser();
                   if (result != null) {
                     setState(
@@ -116,7 +120,7 @@ class _NavBarBaseState extends State<NavBarBase> {
                     );
                   }
                 },
-                child: Icon(
+                icon: Icon(
                   Icons.shopping_cart_rounded,
                   color: accentColor,
                 ),
@@ -124,15 +128,30 @@ class _NavBarBaseState extends State<NavBarBase> {
               label: 'cart',
             ),
             BottomNavigationBarItem(
-              icon: GestureDetector(
-                onTap: () {
-                  setState(
-                    () {
-                      currentIndex = 3;
-                    },
-                  );
+              icon: IconButton(
+                padding: EdgeInsets.zero,
+                onPressed: () async {
+                  final result = await getUser();
+                  if (result != null) {
+                    setState(
+                      () {
+                        currentIndex = 3;
+                      },
+                    );
+                  } else {
+                    WidgetsBinding.instance.addPostFrameCallback(
+                      (timeStamp) {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const LoginPage(),
+                          ),
+                        );
+                      },
+                    );
+                  }
                 },
-                child: Icon(
+                icon: Icon(
                   Icons.shopify,
                   color: accentColor,
                 ),
@@ -140,8 +159,9 @@ class _NavBarBaseState extends State<NavBarBase> {
               label: 'orders',
             ),
             BottomNavigationBarItem(
-              icon: GestureDetector(
-                onTap: () async {
+              icon: IconButton(
+                padding: EdgeInsets.zero,
+                onPressed: () async {
                   final result = await getUser();
                   if (result != null) {
                     setState(
@@ -162,7 +182,7 @@ class _NavBarBaseState extends State<NavBarBase> {
                     );
                   }
                 },
-                child: Icon(
+                icon: Icon(
                   Icons.favorite,
                   color: accentColor,
                 ),

@@ -16,7 +16,7 @@ class FavoriteBookBloc extends Bloc<FavoriteBookEvent, FavoriteBookState> {
           emit(FavoriteBookLoading());
           await FirebaseFirestore.instance
               .collection('Users')
-              .doc(user.id)
+              .doc(user.phoneNumber)
               .collection('Favorites')
               .doc(event.bookISBN)
               .set(

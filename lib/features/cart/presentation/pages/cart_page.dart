@@ -3,12 +3,12 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:kitaby/core/presentation/widgets/base_app_bar.dart';
 import 'package:kitaby/features/authentication/data/models/user_model.dart';
+import 'package:kitaby/features/cart/app/cart_bloc/cart_bloc.dart';
 import 'package:kitaby/features/cart/app/place_order_bloc/place_order_bloc.dart';
 import 'package:kitaby/features/cart/app/total_price_counter_cubit/total_price_counter_cubit.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-// import 'package:stripe_payment/stripe_payment.dart';
 import '../widgets/cart_item_columns.dart';
 
 class CartPage extends StatefulWidget {
@@ -35,8 +35,6 @@ class _CartPageState extends State<CartPage> {
     }
   }
 
-  CollectionReference? cart;
-  CollectionReference? books;
   ValueNotifier<String> payemntMethod = ValueNotifier('عند التوصيل');
 
   @override
@@ -44,21 +42,7 @@ class _CartPageState extends State<CartPage> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback(
       (timeStamp) async {
-        await getUser().then(
-          (value) {
-            setState(
-              () {
-                cart = FirebaseFirestore.instance
-                    .collection('Users')
-                    .doc(value!.id)
-                    .collection('Cart')
-                    .doc('cartDoc')
-                    .collection('Cart_Items');
-                books = FirebaseFirestore.instance.collection('Books');
-              },
-            );
-          },
-        );
+        await getUser();
       },
     );
   }
@@ -67,6 +51,9 @@ class _CartPageState extends State<CartPage> {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
+        BlocProvider(
+          create: (context) => CartBloc()..add(CartEvent()),
+        ),
         BlocProvider(
           create: (context) => TotalPriceCounterCubit(),
         ),
@@ -86,8 +73,6 @@ class _CartPageState extends State<CartPage> {
                   height: 30.h,
                 ),
                 CartItemsColumn(
-                  cart: cart,
-                  books: books,
                   payemntMethod: payemntMethod,
                 ),
               ],

@@ -1,5 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:kitaby/features/cart/app/cart_bloc/cart_bloc.dart';
+import 'package:kitaby/features/cart/models/cart_item_model.dart';
+import 'package:kitaby/features/cart/presentation/pages/payment_form.dart';
 import 'package:kitaby/features/cart/presentation/widgets/select_payment_row.dart';
 
 import '../../../../core/presentation/widgets/base_button.dart';
@@ -13,28 +16,15 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../pages/order_placed_page.dart';
 
-class CartDetailsContainer extends StatefulWidget {
+class CartDetailsContainer extends StatelessWidget {
   const CartDetailsContainer({
     Key? key,
     required this.payemntMethod,
-    required this.cart,
+    required this.cartItems,
   }) : super(key: key);
 
   final ValueNotifier<String> payemntMethod;
-  final CollectionReference<Object?>? cart;
-
-  @override
-  State<CartDetailsContainer> createState() => _CartDetailsContainerState();
-}
-
-class _CartDetailsContainerState extends State<CartDetailsContainer> {
-  // PaymentMethod? paymentMethod;
-
-  @override
-  void initState() {
-    super.initState();
-    // PaymentService.init();
-  }
+  final List<CartItemModel> cartItems;
 
   @override
   Widget build(BuildContext context) {
@@ -43,7 +33,7 @@ class _CartDetailsContainerState extends State<CartDetailsContainer> {
         SizedBox(
           height: 10.h,
         ),
-        SelectPaymentRow(payemntMethod: widget.payemntMethod),
+        SelectPaymentRow(payemntMethod: payemntMethod),
         SizedBox(
           height: 10.h,
         ),
@@ -104,7 +94,10 @@ class _CartDetailsContainerState extends State<CartDetailsContainer> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => const OrderPlacedPage(),
+                                builder: (_) => BlocProvider.value(
+                                  value: BlocProvider.of<CartBloc>(context),
+                                  child: const OrderPlacedPage(),
+                                ),
                               ),
                             );
                           },
@@ -113,15 +106,30 @@ class _CartDetailsContainerState extends State<CartDetailsContainer> {
                       return BaseButton(
                         text: 'إجراء الطلب',
                         onPressed: () async {
-                          if (widget.payemntMethod.value == 'إلكتروني') {
-                            // paymentMethod = await const PaymentService()
-                            //     .createPaymentMethod();
+                          if (payemntMethod.value == 'إلكتروني') {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) =>
+                                    BlocProvider<PlaceOrderBloc>.value(
+                                  value:
+                                      BlocProvider.of<PlaceOrderBloc>(context),
+                                  child: BlocProvider<CartBloc>.value(
+                                    value: BlocProvider.of<CartBloc>(context),
+                                    child: PaymentForm(
+                                      totalPrice: totalPriceState,
+                                      cartItems: cartItems,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            );
                           } else {
                             context.read<PlaceOrderBloc>().add(
                                   PlaceOrderEvent(
                                     totalPrice: totalPriceState,
-                                    paymentMethod: widget.payemntMethod.value,
-                                    cart: widget.cart!,
+                                    paymentMethod: payemntMethod.value,
+                                    cartItems: cartItems,
                                   ),
                                 );
                           }

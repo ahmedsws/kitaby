@@ -16,27 +16,29 @@ class SelectPaymentRow extends StatelessWidget {
         showDialog<void>(
           context: context,
           builder: (BuildContext context) {
-            return SimpleDialog(
-              // <-- SEE HERE
-              title: const Text('إختر وسيلة الدفع'),
-              children: <Widget>[
-                SimpleDialogOption(
-                  onPressed: () {
-                    Navigator.of(context).pop();
+            return Directionality(
+              textDirection: TextDirection.rtl,
+              child: SimpleDialog(
+                title: const Text('إختر وسيلة الدفع'),
+                children: <Widget>[
+                  SimpleDialogOption(
+                    onPressed: () {
+                      Navigator.of(context).pop();
 
-                    payemntMethod.value = 'عند التوصيل';
-                  },
-                  child: const Text('عند التوصيل'),
-                ),
-                SimpleDialogOption(
-                  onPressed: () {
-                    Navigator.of(context).pop();
+                      payemntMethod.value = 'عند التوصيل';
+                    },
+                    child: const Text('عند التوصيل'),
+                  ),
+                  SimpleDialogOption(
+                    onPressed: () {
+                      Navigator.of(context).pop();
 
-                    payemntMethod.value = 'إلكتروني';
-                  },
-                  child: const Text('إلكتروني'),
-                ),
-              ],
+                      payemntMethod.value = 'إلكتروني';
+                    },
+                    child: const Text('إلكتروني'),
+                  ),
+                ],
+              ),
             );
           },
         );

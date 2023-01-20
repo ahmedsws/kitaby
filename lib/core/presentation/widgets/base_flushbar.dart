@@ -3,13 +3,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 Flushbar<dynamic> buildBaseFlushBar(
-    {required BuildContext context, required String message}) {
+    {required BuildContext context,
+    required String message,
+    String? titleText,
+    Color? backgroundColor}) {
   return Flushbar(
     flushbarPosition: FlushbarPosition.TOP,
-    backgroundColor: Colors.red,
+    backgroundColor: backgroundColor ?? Colors.red,
     duration: const Duration(seconds: 3),
     titleText: Text(
-      'حدث خطأ!',
+      titleText ?? 'حدث خطأ!',
       textDirection: TextDirection.rtl,
       style: Theme.of(context).textTheme.bodyText1!.copyWith(
             color: Theme.of(context).primaryColor,

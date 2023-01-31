@@ -24,7 +24,7 @@ class OrdersBloc extends Bloc<OrdersEvent, OrdersState> {
               .get();
 
           final orders = result.docs.map((order) {
-            return OrderModel.fromJson(order.data());
+            return OrderModel.fromJson(order.data(), order.reference.id);
           }).toList();
 
           return emit(

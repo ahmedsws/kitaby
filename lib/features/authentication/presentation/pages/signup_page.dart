@@ -2,8 +2,10 @@ import 'dart:convert';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:kitaby/core/presentation/widgets/base_button.dart';
+import 'package:kitaby/core/presentation/widgets/base_progress_indicator.dart';
 import 'package:kitaby/core/presentation/widgets/containers_decoration.dart';
 import 'package:kitaby/features/authentication/data/models/user_model.dart';
 import 'package:kitaby/features/store_books/presentation/pages/store_books_page.dart';
@@ -33,6 +35,7 @@ class _SignupPageState extends State<SignupPage> {
   final _formKey = GlobalKey<FormState>();
 
   bool isRegistiring = false;
+  bool isSubmittingOtp = false;
 
   @override
   void initState() {
@@ -46,6 +49,9 @@ class _SignupPageState extends State<SignupPage> {
 
   @override
   Widget build(BuildContext context) {
+    // setState(() {
+    //   isRegistiring = false;
+    // });
     return Directionality(
       textDirection: TextDirection.rtl,
       child: Scaffold(
@@ -166,7 +172,7 @@ class _SignupPageState extends State<SignupPage> {
                                                 await SharedPreferences
                                                     .getInstance();
 
-                                            prefs.setString(
+                                            await prefs.setString(
                                               'user',
                                               jsonEncode(user),
                                             );
@@ -174,7 +180,7 @@ class _SignupPageState extends State<SignupPage> {
                                             WidgetsBinding.instance
                                                 .addPostFrameCallback(
                                               (timeStamp) {
-                                                Navigator.push(
+                                                Navigator.pushReplacement(
                                                   context,
                                                   MaterialPageRoute(
                                                     builder: (context) =>
@@ -184,6 +190,9 @@ class _SignupPageState extends State<SignupPage> {
 
                                                 buildBaseFlushBar(
                                                   context: context,
+                                                  titleText:
+                                                      'تمت العملية بنجاح!',
+                                                  backgroundColor: Colors.green,
                                                   message:
                                                       'تم انشاء حسابك بنجاح!',
                                                 );
@@ -201,13 +210,16 @@ class _SignupPageState extends State<SignupPage> {
                                         context: context,
                                         message: 'خطأ في رقم الهاتف',
                                       );
+                                      setState(() {
+                                        isRegistiring = false;
+                                      });
                                     }
                                   },
                                   codeSent: (String verificationId,
                                       int? resendToken) async {
                                     // Update the UI - wait for the user to enter the SMS code
                                     late String smsCode;
-                                    await showModalBottomSheet(
+                                    showModalBottomSheet(
                                       context: context,
                                       isScrollControlled: true,
                                       builder: (context) => Container(
@@ -218,103 +230,136 @@ class _SignupPageState extends State<SignupPage> {
                                             SizedBox(
                                               height: 30.h,
                                             ),
-                                            Center(
-                                              child: OtpTextField(
-                                                numberOfFields: 6,
-                                                borderColor: Theme.of(context)
-                                                    .accentColor,
-                                                decoration: InputDecoration(
-                                                  border: OutlineInputBorder(
-                                                    borderSide: BorderSide(
-                                                      color: Theme.of(context)
-                                                          .accentColor,
+                                            isSubmittingOtp
+                                                ? const BaseProgressIndicator()
+                                                : Center(
+                                                    child: OtpTextField(
+                                                      numberOfFields: 6,
+
+                                                      borderColor:
+                                                          Theme.of(context)
+                                                              .accentColor,
+                                                      decoration:
+                                                          InputDecoration(
+                                                        border:
+                                                            OutlineInputBorder(
+                                                          borderSide:
+                                                              BorderSide(
+                                                            color: Theme.of(
+                                                                    context)
+                                                                .accentColor,
+                                                          ),
+                                                        ),
+                                                      ),
+                                                      //set to true to show as box or false to show as dash
+                                                      showFieldAsBox: true,
+                                                      //runs when a code is typed in
+                                                      onCodeChanged:
+                                                          (String code) {
+                                                        //handle validation or checks here
+                                                      },
+                                                      //runs when every textfield is filled
+                                                      onSubmit: (String
+                                                          verificationCode) async {
+                                                        isSubmittingOtp = true;
+                                                        smsCode =
+                                                            verificationCode;
+                                                        // Create a PhoneAuthCredential with the code
+                                                        PhoneAuthCredential
+                                                            phoneAuthCredential =
+                                                            PhoneAuthProvider
+                                                                .credential(
+                                                          verificationId:
+                                                              verificationId,
+                                                          smsCode: smsCode,
+                                                        );
+
+                                                        // Sign the user in (or link) with the credential
+                                                        await auth
+                                                            .signInWithCredential(
+                                                                phoneAuthCredential)
+                                                            .then(
+                                                          (value) {
+                                                            final user =
+                                                                UserModel(
+                                                              id: value
+                                                                  .user!.uid,
+                                                              name:
+                                                                  nameController
+                                                                      .text,
+                                                              username:
+                                                                  phoneController
+                                                                      .text,
+                                                              phoneNumber:
+                                                                  phoneController
+                                                                      .text,
+                                                              location:
+                                                                  addressController
+                                                                      .text,
+                                                              password:
+                                                                  passwordController
+                                                                      .text,
+                                                            ).toJson();
+
+                                                            users
+                                                                .doc(
+                                                                    phoneController
+                                                                        .text)
+                                                                .set(user)
+                                                                .then(
+                                                              (value) async {
+                                                                final prefs =
+                                                                    await SharedPreferences
+                                                                        .getInstance();
+
+                                                                await prefs
+                                                                    .setString(
+                                                                  'user',
+                                                                  jsonEncode(
+                                                                      user),
+                                                                );
+
+                                                                // TODO رد المستخدم للهوم
+
+                                                                WidgetsBinding
+                                                                    .instance
+                                                                    .addPostFrameCallback(
+                                                                  (timeStamp) {
+                                                                    // Navigator.pop(context);
+                                                                    Navigator
+                                                                        .pushReplacement(
+                                                                      context,
+                                                                      MaterialPageRoute(
+                                                                        builder:
+                                                                            (context) =>
+                                                                                const NavBarBase(),
+                                                                      ),
+                                                                    );
+
+                                                                    buildBaseFlushBar(
+                                                                      context:
+                                                                          context,
+                                                                      titleText:
+                                                                          'تمت العملية بنجاح!',
+                                                                      backgroundColor:
+                                                                          Colors
+                                                                              .green,
+                                                                      message:
+                                                                          'تم انشاء حسابك بنجاح!',
+                                                                    );
+                                                                  },
+                                                                );
+                                                              },
+                                                            );
+                                                          },
+                                                        );
+                                                      }, // end onSubmit
                                                     ),
                                                   ),
-                                                ),
-                                                //set to true to show as box or false to show as dash
-                                                showFieldAsBox: true,
-                                                //runs when a code is typed in
-                                                onCodeChanged: (String code) {
-                                                  //handle validation or checks here
-                                                },
-                                                //runs when every textfield is filled
-                                                onSubmit:
-                                                    (String verificationCode) {
-                                                  setState(
-                                                    () {
-                                                      smsCode =
-                                                          verificationCode;
-                                                    },
-                                                  );
-                                                }, // end onSubmit
-                                              ),
-                                            ),
                                           ],
                                         ),
                                       ),
-                                    ).then((value) async {
-                                      // Create a PhoneAuthCredential with the code
-                                      PhoneAuthCredential phoneAuthCredential =
-                                          PhoneAuthProvider.credential(
-                                        verificationId: verificationId,
-                                        smsCode: smsCode,
-                                      );
-
-                                      // Sign the user in (or link) with the credential
-                                      await auth
-                                          .signInWithCredential(
-                                              phoneAuthCredential)
-                                          .then(
-                                        (value) {
-                                          final user = UserModel(
-                                            id: value.user!.uid,
-                                            name: nameController.text,
-                                            username: phoneController.text,
-                                            phoneNumber: phoneController.text,
-                                            location: addressController.text,
-                                            password: passwordController.text,
-                                          ).toJson();
-
-                                          users
-                                              .doc(phoneController.text)
-                                              .set(user)
-                                              .then(
-                                            (value) async {
-                                              final prefs =
-                                                  await SharedPreferences
-                                                      .getInstance();
-
-                                              prefs.setString(
-                                                'user',
-                                                jsonEncode(user),
-                                              );
-
-                                              // TODO رد المستخدم للهوم
-
-                                              WidgetsBinding.instance
-                                                  .addPostFrameCallback(
-                                                (timeStamp) {
-                                                  Navigator.pop(context);
-                                                  Navigator.push(
-                                                    context,
-                                                    MaterialPageRoute(
-                                                      builder: (context) =>
-                                                          const NavBarBase(),
-                                                    ),
-                                                  );
-
-                                                  buildBaseFlushBar(
-                                                    context: context,
-                                                    message:
-                                                        'تم انشاء حسابك بنجاح!',
-                                                  );
-                                                },
-                                              );
-                                            },
-                                          );
-                                        },
-                                      );
-                                    });
+                                    ).then((value) async {});
                                   },
                                   timeout: const Duration(seconds: 120),
                                   codeAutoRetrievalTimeout:
@@ -323,6 +368,9 @@ class _SignupPageState extends State<SignupPage> {
                                       message: 'انتهى وقت استرجاع كلمة التحقق',
                                       context: context,
                                     );
+                                    setState(() {
+                                      isRegistiring = false;
+                                    });
                                   },
                                 );
                               }
@@ -331,6 +379,9 @@ class _SignupPageState extends State<SignupPage> {
                                 context: context,
                                 message: 'يجب تعبئة الحقول بشكل صحيح!',
                               );
+                              setState(() {
+                                isRegistiring = false;
+                              });
                             }
                           },
                         ),

@@ -64,7 +64,10 @@ class _CartPageState extends State<CartPage> {
       child: Directionality(
         textDirection: TextDirection.rtl,
         child: Scaffold(
-          appBar: const BaseAppBar(title: 'السلة'),
+          appBar: const BaseAppBar(
+            title: 'السلة',
+            leading: SizedBox(),
+          ),
           body: SingleChildScrollView(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,

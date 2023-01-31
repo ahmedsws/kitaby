@@ -3,11 +3,11 @@ import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
 import 'package:flutter/material.dart';
 import 'package:kitaby/core/data/models/book_model.dart';
 import 'package:kitaby/core/presentation/widgets/base_button.dart';
-import 'package:kitaby/features/customer_store/app/bloc/select_image_bloc.dart';
+import 'package:kitaby/features/customer_store/app/add_customer_book_bloc/add_customer_book_bloc.dart';
+import 'package:kitaby/features/customer_store/app/select_image_bloc/select_image_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../../../core/presentation/widgets/base_app_bar.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -27,63 +27,23 @@ class AddBookForm extends StatefulWidget {
 }
 
 class _AddBookFormState extends State<AddBookForm> {
-  late TextEditingController isbnController;
-  late TextEditingController priceController;
-  late TextEditingController titleController;
-  late TextEditingController authorController;
-  late TextEditingController publisherController;
-  late TextEditingController publicationDateController;
-  late TextEditingController pageCountController;
-  late TextEditingController editionController;
-  late TextEditingController descriptionController;
-  late TextEditingController editionLanguageController;
-  //coverImage
-  late TextEditingController quantityController;
-  //category
-
   final List<String> dealTypes = ['بيع', 'تبادل', 'استعارة'];
 
   String selectedDeal = 'بيع';
 
   final _formKey = GlobalKey<FormState>();
 
-  bool isLoging = false;
-
-  Future<UserModel?> getUser() async {
-    final prefs = await SharedPreferences.getInstance();
-
-    final String? result = prefs.getString('user');
-
-    if (result != null) {
-      final value = jsonDecode(result);
-
-      return UserModel.fromJson(value);
-    }
-  }
-
-  @override
-  void initState() {
-    super.initState();
-
-    isbnController = TextEditingController();
-    priceController = TextEditingController();
-    titleController = TextEditingController();
-    authorController = TextEditingController();
-    publisherController = TextEditingController();
-    publicationDateController = TextEditingController();
-    pageCountController = TextEditingController();
-    editionController = TextEditingController();
-    descriptionController = TextEditingController();
-    editionLanguageController = TextEditingController();
-    //coverImage
-    quantityController = TextEditingController();
-  }
-
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
-    return BlocProvider(
-      create: (context) => SelectImageBloc(),
+    return BlocListener<AddCustomerBookBloc, AddCustomerBookState>(
+      listener: (context, state) {
+        if (state is AddCustomerBookAdded) {
+          WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+            Navigator.pop(context);
+          });
+        }
+      },
       child: Directionality(
         textDirection: TextDirection.rtl,
         child: Scaffold(
@@ -102,25 +62,19 @@ class _AddBookFormState extends State<AddBookForm> {
                           child: Stack(
                             alignment: Alignment.center,
                             children: [
-                              if (state
-                                  is ImageSelected) // && state.image != null
+                              if (state is ImageSelected)
                                 ProfileImageContainer(
                                   image: Image.file(
                                     state.image!,
                                     fit: BoxFit.cover,
                                   ),
-                                )
-                              // else if (widget.userData.user.image != null)
-                              //   ProfileImageContainer(
-                              //     imagePath: widget.userData.user.image,
-                              //   ),
-                              ,
+                                ),
                               Container(
-                                height: 100.h,
-                                width: 100.h,
+                                height: 200.h,
+                                width: 200.h,
                                 alignment: Alignment.center,
                                 decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(100.r),
+                                  borderRadius: BorderRadius.circular(10.r),
                                   color: Colors.black.withOpacity(.43),
                                 ),
                                 child: Icon(
@@ -146,9 +100,15 @@ class _AddBookFormState extends State<AddBookForm> {
                       label: 'ردمك',
                       hintText: '9786030199778',
                       suffixIconData: Icons.book,
-                      controller: isbnController,
+                      controller:
+                          context.read<AddCustomerBookBloc>().isbnController,
                       maxLength: 13,
-                      validator: (p0) => isbnController.text.length == 13
+                      validator: (p0) => context
+                                  .read<AddCustomerBookBloc>()
+                                  .isbnController
+                                  .text
+                                  .length ==
+                              13
                           ? null
                           : 'يجب أن يتكون ردمك من 13 خانة',
                     ),
@@ -156,8 +116,13 @@ class _AddBookFormState extends State<AddBookForm> {
                       label: 'العنوان',
                       hintText: 'أساسيات البرمجة',
                       suffixIconData: Icons.title_rounded,
-                      controller: titleController,
-                      validator: (p0) => titleController.text.isNotEmpty
+                      controller:
+                          context.read<AddCustomerBookBloc>().titleController,
+                      validator: (p0) => context
+                              .read<AddCustomerBookBloc>()
+                              .titleController
+                              .text
+                              .isNotEmpty
                           ? null
                           : 'يجب ادخال العنوان',
                     ),
@@ -165,8 +130,13 @@ class _AddBookFormState extends State<AddBookForm> {
                       label: 'المؤلف',
                       hintText: 'علي القايد',
                       suffixIconData: Icons.person,
-                      controller: authorController,
-                      validator: (p0) => authorController.text.isNotEmpty
+                      controller:
+                          context.read<AddCustomerBookBloc>().authorController,
+                      validator: (p0) => context
+                              .read<AddCustomerBookBloc>()
+                              .authorController
+                              .text
+                              .isNotEmpty
                           ? null
                           : 'يجب ادخال اسم المؤلف',
                     ),
@@ -174,8 +144,14 @@ class _AddBookFormState extends State<AddBookForm> {
                       label: 'دار النشر',
                       hintText: 'دار الحكمة',
                       suffixIconData: Icons.local_library_rounded,
-                      controller: publisherController,
-                      validator: (p0) => publisherController.text.isNotEmpty
+                      controller: context
+                          .read<AddCustomerBookBloc>()
+                          .publisherController,
+                      validator: (p0) => context
+                              .read<AddCustomerBookBloc>()
+                              .publisherController
+                              .text
+                              .isNotEmpty
                           ? null
                           : 'يجب ادخال دار النشر',
                     ),
@@ -183,8 +159,14 @@ class _AddBookFormState extends State<AddBookForm> {
                       label: 'عدد الصفحات',
                       hintText: '180',
                       suffixIconData: Icons.my_library_books,
-                      controller: pageCountController,
-                      validator: (p0) => pageCountController.text.isNotEmpty
+                      controller: context
+                          .read<AddCustomerBookBloc>()
+                          .pageCountController,
+                      validator: (p0) => context
+                              .read<AddCustomerBookBloc>()
+                              .pageCountController
+                              .text
+                              .isNotEmpty
                           ? null
                           : 'يجب ادخال عدد الصفحات',
                     ),
@@ -192,28 +174,30 @@ class _AddBookFormState extends State<AddBookForm> {
                       label: 'عدد الطبعة',
                       hintText: 'الثانية',
                       suffixIconData: Icons.mode_edit_outline,
-                      controller: editionController,
-                      validator: (p0) => editionController.text.isNotEmpty
+                      controller:
+                          context.read<AddCustomerBookBloc>().editionController,
+                      validator: (p0) => context
+                              .read<AddCustomerBookBloc>()
+                              .editionController
+                              .text
+                              .isNotEmpty
                           ? null
                           : 'يجب ادخال عدد الطبعة',
-                    ),
-                    InputBoxColumn(
-                      label: 'تاريخ النشر',
-                      hintText: '2015/12/10',
-                      suffixIconData: Icons.date_range_outlined,
-                      controller: publicationDateController,
-                      validator: (p0) =>
-                          publicationDateController.text.isNotEmpty
-                              ? null
-                              : 'يجب ادخال تاريخ النشر',
                     ),
                     InputBoxColumn(
                       label: 'الوصف',
                       hintText:
                           'كتاب عن أساسيات البرمجة وأهم ما يحتاجه المبرمج المبتدئ',
                       suffixIconData: Icons.description,
-                      controller: descriptionController,
-                      validator: (p0) => descriptionController.text.isNotEmpty
+                      controller: context
+                          .read<AddCustomerBookBloc>()
+                          .descriptionController,
+                      maxLines: 7,
+                      validator: (p0) => context
+                              .read<AddCustomerBookBloc>()
+                              .descriptionController
+                              .text
+                              .isNotEmpty
                           ? null
                           : 'يجب ادخال الوصف',
                     ),
@@ -221,20 +205,32 @@ class _AddBookFormState extends State<AddBookForm> {
                       label: 'الكمية',
                       hintText: '3',
                       suffixIconData: Icons.production_quantity_limits_rounded,
-                      controller: quantityController,
-                      validator: (p0) => quantityController.text.isNotEmpty
+                      controller: context
+                          .read<AddCustomerBookBloc>()
+                          .quantityController,
+                      validator: (p0) => context
+                              .read<AddCustomerBookBloc>()
+                              .quantityController
+                              .text
+                              .isNotEmpty
                           ? null
                           : 'يجب ادخال الكمية',
                     ),
-                    InputBoxColumn(
-                      label: 'السعر',
-                      hintText: '20 دينار',
-                      suffixIconData: Icons.attach_money_outlined,
-                      controller: priceController,
-                      validator: (p0) => priceController.text.isNotEmpty
-                          ? null
-                          : 'يجب ادخال الكمية',
-                    ),
+                    if (selectedDeal == 'بيع')
+                      InputBoxColumn(
+                        label: 'السعر',
+                        hintText: '20 دينار',
+                        suffixIconData: Icons.attach_money_outlined,
+                        controller:
+                            context.read<AddCustomerBookBloc>().priceController,
+                        validator: (p0) => context
+                                .read<AddCustomerBookBloc>()
+                                .priceController
+                                .text
+                                .isNotEmpty
+                            ? null
+                            : 'يجب ادخال الكمية',
+                      ),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -297,75 +293,55 @@ class _AddBookFormState extends State<AddBookForm> {
                     SizedBox(
                       height: 40.h,
                     ),
-                    isLoging
-                        ? const BaseProgressIndicator()
-                        : BaseButton(
-                            text: 'إضافة الكتاب',
-                            onPressed: () async {
-                              if (_formKey.currentState!.validate()) {
-                                setState(
-                                  () {
-                                    isLoging = true;
-                                  },
-                                );
-
-                                final user = await getUser();
-
-                                CollectionReference userBooks =
-                                    FirebaseFirestore.instance
-                                        .collection('Users')
-                                        .doc(user!.id)
-                                        .collection('Books');
-
-                                final result = await userBooks
-                                    .doc(isbnController.text)
-                                    .get();
-
-                                if (result.exists) {
-                                  buildBaseFlushBar(
-                                      context: context,
-                                      message:
-                                          'الكتاب برقم ردمك: ${isbnController.text} موجود مسبقا!');
-                                } else {
-                                  await FirebaseFirestore.instance
-                                      .collection('Users')
-                                      .doc(user.id)
-                                      .collection('Books')
-                                      .add(
-                                        BookModel(
-                                          isbn: isbnController.text,
-                                          title: titleController.text,
-                                          author: authorController.text,
-                                          publisher: publisherController.text,
-                                          edition: editionController.text,
-                                          description:
-                                              descriptionController.text,
-                                          coverImageUrl:
-                                              'https://firebasestorage.googleapis.com/v0/b/mybook-f7793.appspot.com/o/Images%2F%D8%A7%D9%84%D9%83%D8%AA%D8%A7%D8%A81.jpg?alt=media&token=ed531fa7-0dc4-4a03-9cbc-b938ad030812',
-                                          category: 'فكر',
-                                          pageCount: int.parse(
-                                              pageCountController.text),
-                                          quantity: int.parse(
-                                              quantityController.text),
-                                          price:
-                                              num.parse(priceController.text),
-                                          dealType: selectedDeal,
-                                          status: true,
-                                        ).toJson(),
-                                      )
-                                      .then((value) => Navigator.popUntil(
-                                            context,
-                                            (route) => route.isFirst,
-                                          ));
-                                }
-                              } else {
-                                buildBaseFlushBar(
+                    BlocBuilder<SelectImageBloc, SelectImageState>(
+                      builder: (context, imageState) {
+                        return BlocConsumer<AddCustomerBookBloc,
+                            AddCustomerBookState>(
+                          listener: (context, state) {
+                            if (state is AddCustomerBookAdded) {
+                              // Navigator.popUntil(
+                              //   context,
+                              //   (route) => route.isFirst,
+                              // );
+                            }
+                            if (state is AddCustomerBookError) {
+                              buildBaseFlushBar(
                                   context: context,
-                                  message: 'يجب تعبئة الحقول بشكل صحيح!',
-                                );
-                              }
-                            },
-                          ),
+                                  message:
+                                      'الكتاب برقم ردمك: ${context.read<AddCustomerBookBloc>().isbnController.text} موجود مسبقا!');
+                            }
+                          },
+                          builder: (context, state) {
+                            return state is AddCustomerBookInitial
+                                ? BaseButton(
+                                    text: 'إضافة الكتاب',
+                                    onPressed: () async {
+                                      if (_formKey.currentState!.validate()) {
+                                        if (imageState.image != null) {
+                                          // TODO
+                                          BlocProvider.of<AddCustomerBookBloc>(
+                                                  context)
+                                              .add(
+                                            AddCustomerBookEvent(
+                                              image: imageState.image,
+                                              selectedDeal: selectedDeal,
+                                            ),
+                                          );
+                                        }
+                                      } else {
+                                        buildBaseFlushBar(
+                                          context: context,
+                                          message:
+                                              'يجب تعبئة الحقول بشكل صحيح!',
+                                        );
+                                      }
+                                    },
+                                  )
+                                : const BaseProgressIndicator();
+                          },
+                        );
+                      },
+                    ),
                     SizedBox(
                       height: 40.h,
                     ),

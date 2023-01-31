@@ -17,7 +17,10 @@ class OrdersPage extends StatelessWidget {
       child: BlocProvider(
         create: (context) => OrdersBloc()..add(OrdersEvent()),
         child: Scaffold(
-          appBar: const BaseAppBar(title: 'الطلبات'),
+          appBar: const BaseAppBar(
+            title: 'الطلبات',
+            leading: SizedBox(),
+          ),
           body: BlocBuilder<OrdersBloc, OrdersState>(
             builder: (context, ordersState) {
               if (ordersState is OrdersLoaded) {

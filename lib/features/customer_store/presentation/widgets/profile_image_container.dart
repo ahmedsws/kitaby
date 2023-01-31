@@ -16,12 +16,11 @@ class ProfileImageContainer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 112.h,
-      width: 112.h,
-      padding: EdgeInsets.all(6),
+      height: 200.h,
+      width: 200.h,
       decoration: BoxDecoration(
         color: Theme.of(context).primaryColor,
-        borderRadius: BorderRadius.circular(100.r),
+        borderRadius: BorderRadius.circular(10.r),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(.05),
@@ -31,7 +30,7 @@ class ProfileImageContainer extends StatelessWidget {
         ],
       ),
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(100.r),
+        borderRadius: BorderRadius.circular(10.r),
         clipBehavior: Clip.antiAlias,
         child: image ??
             (imagePath != null

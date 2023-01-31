@@ -1,6 +1,7 @@
 class UserModel {
   final String id, name, password, phoneNumber, username, location;
-  final double? rating;
+  final List<int> ratings;
+  final bool status;
 
   const UserModel({
     required this.id,
@@ -9,7 +10,8 @@ class UserModel {
     required this.phoneNumber,
     required this.username,
     required this.location,
-    this.rating,
+    this.ratings = const [],
+    this.status = true,
   });
   UserModel.fromJson(Map<String, dynamic> json)
       : id = json['id'],
@@ -18,7 +20,8 @@ class UserModel {
         phoneNumber = json['phoneNumber'],
         username = json['username'],
         location = json['location'],
-        rating = json['rating'];
+        ratings = json['Ratings'] != null ? List.from(json['Ratings']) : [],
+        status = json['Status'];
 
   Map<String, Object?> toJson() => {
         'id': id,
@@ -27,6 +30,7 @@ class UserModel {
         'phoneNumber': phoneNumber,
         'username': username,
         'location': location,
-        'rating': rating,
+        'Ratings': ratings,
+        'Status': status,
       };
 }

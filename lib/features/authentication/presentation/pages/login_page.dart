@@ -9,10 +9,8 @@ import 'package:kitaby/features/authentication/presentation/pages/signup_page.da
 import 'package:kitaby/features/authentication/data/models/user_model.dart';
 import 'package:kitaby/features/home/presentation/pages/home_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
 import '../../../../core/presentation/widgets/base_app_bar.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-
 import '../../../../core/presentation/widgets/base_flushbar.dart';
 import '../../../../core/presentation/widgets/base_progress_indicator.dart';
 import '../../../../utils/constants.dart';
@@ -99,31 +97,40 @@ class _LoginPageState extends State<LoginPage> {
                               if (result.exists) {
                                 final user = UserModel.fromJson(result.data()!);
 
-                                if (passwordController.text == user.password) {
-                                  final prefs =
-                                      await SharedPreferences.getInstance();
+                                if (user.status == true) {
+                                  if (passwordController.text ==
+                                      user.password) {
+                                    final prefs =
+                                        await SharedPreferences.getInstance();
 
-                                  await prefs.setString(
-                                    'user',
-                                    jsonEncode(user.toJson()),
-                                  );
+                                    await prefs.setString(
+                                      'user',
+                                      jsonEncode(user.toJson()),
+                                    );
 
-                                  WidgetsBinding.instance.addPostFrameCallback(
-                                    (timeStamp) {
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (context) =>
-                                              const NavBarBase(),
-                                        ),
-                                      );
-                                    },
-                                  );
+                                    WidgetsBinding.instance
+                                        .addPostFrameCallback(
+                                      (timeStamp) {
+                                        Navigator.pushReplacement(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) =>
+                                                const NavBarBase(),
+                                          ),
+                                        );
+                                      },
+                                    );
+                                  } else {
+                                    buildBaseFlushBar(
+                                        context: context,
+                                        message:
+                                            'حطأ في رقم الهاتف أو كلمة المرور!');
+                                  }
                                 } else {
                                   buildBaseFlushBar(
-                                      context: context,
-                                      message:
-                                          'حطأ في رقم الهاتف أو كلمة المرور!');
+                                    context: context,
+                                    message: 'هذا الحساب موقوف!',
+                                  );
                                 }
                               } else {
                                 buildBaseFlushBar(

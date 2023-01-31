@@ -15,6 +15,8 @@ class InputBoxColumn extends StatelessWidget {
     this.validator,
     this.maxLength,
     this.keyboardType,
+    this.expands = false,
+    this.maxLines = 1,
   }) : super(key: key);
 
   final String hintText, label;
@@ -24,6 +26,8 @@ class InputBoxColumn extends StatelessWidget {
   final String? Function(String?)? validator;
   final int? maxLength;
   final TextInputType? keyboardType;
+  final bool expands;
+  final int maxLines;
 
   @override
   Widget build(BuildContext context) {
@@ -68,6 +72,8 @@ class InputBoxColumn extends StatelessWidget {
             maxLength: maxLength,
             obscureText: obscureText,
             validator: validator,
+            expands: expands,
+            maxLines: maxLines,
           ),
         ),
       ],

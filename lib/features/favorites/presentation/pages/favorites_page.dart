@@ -19,7 +19,10 @@ class FavoritesPage extends StatelessWidget {
       child: BlocProvider(
         create: (context) => FavoritesBloc()..add(FavoritesEvent()),
         child: Scaffold(
-          appBar: const BaseAppBar(title: 'المفضلة'),
+          appBar: const BaseAppBar(
+            title: 'المفضلة',
+            leading: SizedBox(),
+          ),
           body: SingleChildScrollView(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,

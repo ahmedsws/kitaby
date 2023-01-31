@@ -8,9 +8,17 @@ import '../../../../core/presentation/widgets/base_progress_indicator.dart';
 import '../../../../utils/constants.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-class CustomersBooksPage extends StatelessWidget {
+import '../widgets/customer_book_container.dart';
+
+class CustomersBooksPage extends StatefulWidget {
   const CustomersBooksPage({super.key});
 
+  @override
+  State<CustomersBooksPage> createState() => _CustomersBooksPageState();
+}
+
+class _CustomersBooksPageState extends State<CustomersBooksPage> {
+  String searchText = '';
   Future<List<BookModel>> getCustomersBooks() async {
     final users = await FirebaseFirestore.instance.collection('Users').get();
 
@@ -65,6 +73,11 @@ class CustomersBooksPage extends StatelessWidget {
                       ),
                     ),
                   ),
+                  onChanged: (value) {
+                    setState(() {
+                      searchText = value;
+                    });
+                  },
                 ),
               ),
               SizedBox(
@@ -88,16 +101,21 @@ class CustomersBooksPage extends StatelessWidget {
                                   crossAxisSpacing: 16.w,
                                   mainAxisSpacing: 16.w,
                                   children: [
-                                    ...snapshot.data!.map(
-                                      (doc) {
-                                        // Map<String, dynamic> data =
-                                        //     doc.data() as Map<String, dynamic>;
-                                        // final book = BookModel.fromJson(data);
-                                        return BookContainer(
-                                          book: doc,
-                                        );
-                                      },
-                                    ),
+                                    ...snapshot.data!
+                                        .map(
+                                          (doc) {
+                                            return CustomerBookContainer(
+                                              book: doc,
+                                            );
+                                          },
+                                        )
+                                        .where((doc) =>
+                                            doc.book.status == true &&
+                                            doc.book.quantity > 0)
+                                        .where(
+                                          (doc) => doc.book.title
+                                              .contains(searchText),
+                                        ),
                                   ],
                                 )
                               : const BaseProgressIndicator();

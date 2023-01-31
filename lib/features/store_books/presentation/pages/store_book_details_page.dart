@@ -177,73 +177,112 @@ class _StoreBookDetailsPageState extends State<StoreBookDetailsPage> {
                               SizedBox(
                                 height: 15.h,
                               ),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  ...List.generate(
-                                    5,
-                                    (index) {
-                                      return IconButton(
-                                        padding: EdgeInsets.zero,
-                                        onPressed: () async {
-                                          final user =
-                                              await Constants.getUser();
+                              FutureBuilder(
+                                  future: Constants.getUser(),
+                                  builder: (context, snapshot) {
+                                    return snapshot.connectionState ==
+                                            ConnectionState.done
+                                        ? snapshot.data != null
+                                            ? Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.center,
+                                                children: [
+                                                  ...List.generate(
+                                                    5,
+                                                    (index) {
+                                                      return IconButton(
+                                                        padding:
+                                                            EdgeInsets.zero,
+                                                        onPressed: () async {
+                                                          final user =
+                                                              await Constants
+                                                                  .getUser();
 
-                                          if (user != null) {
-                                            if (starRatePressed != 0) {
-                                              // TODO make the rating related to the user
-                                              FirebaseFirestore.instance
-                                                  .collection('Books')
-                                                  .doc(widget.book.isbn)
-                                                  .update(
-                                                {
-                                                  'Ratings': widget.book.ratings
-                                                    ..removeAt(widget.book
-                                                            .ratings.length -
-                                                        1),
-                                                },
-                                              );
-                                              FirebaseFirestore.instance
-                                                  .collection('Books')
-                                                  .doc(widget.book.isbn)
-                                                  .update(
-                                                {
-                                                  'Ratings': widget.book.ratings
-                                                    ..add(index),
-                                                },
-                                              ).then((value) {
-                                                setState(() {
-                                                  starRatePressed = index;
-                                                });
-                                              });
-                                            } else {
-                                              FirebaseFirestore.instance
-                                                  .collection('Books')
-                                                  .doc(widget.book.isbn)
-                                                  .update(
-                                                {
-                                                  'Ratings': widget.book.ratings
-                                                    ..add(index),
-                                                },
-                                              );
-                                              setState(() {
-                                                starRatePressed = index;
-                                              });
-                                            }
-                                          }
-                                        },
-                                        icon: Icon(
-                                          Icons.star,
-                                          color: ++index <= starRatePressed
-                                              ? Colors.amber
-                                              : const Color(0xFFEDEDEF),
-                                          size: 40.sp,
-                                        ),
-                                      );
-                                    },
-                                  ),
-                                ],
-                              ),
+                                                          if (user != null) {
+                                                            if (starRatePressed !=
+                                                                0) {
+                                                              // TODO make the rating related to the user
+                                                              FirebaseFirestore
+                                                                  .instance
+                                                                  .collection(
+                                                                      'Books')
+                                                                  .doc(widget
+                                                                      .book
+                                                                      .isbn)
+                                                                  .update(
+                                                                {
+                                                                  'Ratings': widget
+                                                                      .book
+                                                                      .ratings
+                                                                    ..removeAt(widget
+                                                                            .book
+                                                                            .ratings
+                                                                            .length -
+                                                                        1),
+                                                                },
+                                                              );
+                                                              FirebaseFirestore
+                                                                  .instance
+                                                                  .collection(
+                                                                      'Books')
+                                                                  .doc(widget
+                                                                      .book
+                                                                      .isbn)
+                                                                  .update(
+                                                                {
+                                                                  'Ratings': widget
+                                                                      .book
+                                                                      .ratings
+                                                                    ..add(
+                                                                        index),
+                                                                },
+                                                              ).then((value) {
+                                                                setState(() {
+                                                                  starRatePressed =
+                                                                      index;
+                                                                });
+                                                              });
+                                                            } else {
+                                                              FirebaseFirestore
+                                                                  .instance
+                                                                  .collection(
+                                                                      'Books')
+                                                                  .doc(widget
+                                                                      .book
+                                                                      .isbn)
+                                                                  .update(
+                                                                {
+                                                                  'Ratings': widget
+                                                                      .book
+                                                                      .ratings
+                                                                    ..add(
+                                                                        index),
+                                                                },
+                                                              );
+                                                              setState(() {
+                                                                starRatePressed =
+                                                                    index;
+                                                              });
+                                                            }
+                                                          }
+                                                        },
+                                                        icon: Icon(
+                                                          Icons.star,
+                                                          color: ++index <=
+                                                                  starRatePressed
+                                                              ? Colors.amber
+                                                              : const Color(
+                                                                  0xFFEDEDEF),
+                                                          size: 40.sp,
+                                                        ),
+                                                      );
+                                                    },
+                                                  ),
+                                                ],
+                                              )
+                                            : const SizedBox()
+                                        : const SizedBox();
+                                  }),
                               SizedBox(
                                 height: 25.h,
                               ),
@@ -390,20 +429,22 @@ class _StoreBookDetailsPageState extends State<StoreBookDetailsPage> {
                                   "book_isbn": widget.book.isbn,
                                   "quantity": 1,
                                 },
-                              );
-                              // WidgetsBinding.instance.addPostFrameCallback(
-                              //   (_) {
-                              //     Navigator.popUntil(
-                              //         context, (route) => route.isFirst);
-                              //   },
-                              // );
+                              ).then((value) {
+                                // WidgetsBinding.instance.addPostFrameCallback(
+                                //   (_) {
+                                //     Navigator.popUntil(
+                                //         context, (route) => route.isFirst);
+                                //   },
+                                // );
 
-                              buildBaseFlushBar(
+                                buildBaseFlushBar(
                                   context: context,
                                   titleText: 'نجحت العملية',
                                   backgroundColor:
                                       const Color.fromARGB(255, 103, 228, 107),
-                                  message: 'تمت إضافة الكتاب إلى السلة بنجاح!');
+                                  message: 'تمت إضافة الكتاب إلى السلة بنجاح!',
+                                );
+                              });
                             } else {
                               WidgetsBinding.instance.addPostFrameCallback(
                                 (timeStamp) {

@@ -28,7 +28,7 @@ class _NavBarBaseState extends State<NavBarBase> {
 
     if (result != null) {
       final value = jsonDecode(result);
-      // await prefs.remove('user');
+
       return UserModel.fromJson(value);
     } else {
       return null;

@@ -8,7 +8,7 @@ class BookModel {
       coverImageUrl,
       category,
       dealType;
-  // final DateTime publicationDate;
+  final String? userPhoneNumber;
   final int pageCount, quantity;
   final List<int> ratings;
   final num price;
@@ -27,9 +27,10 @@ class BookModel {
     required this.pageCount,
     required this.quantity,
     required this.price,
-    this.ratings = const [0],
+    this.ratings = const [],
     required this.status,
     this.dealType = 'بيع',
+    this.userPhoneNumber,
   });
 
   BookModel.fromJson(Map<String, dynamic> json)
@@ -45,9 +46,10 @@ class BookModel {
         pageCount = json['Page_Count'],
         quantity = json['Quantity'],
         price = json['Price'],
-        ratings = json['Ratings'] != null ? List.from(json['Ratings']) : [0],
+        ratings = json['Ratings'] != null ? List.from(json['Ratings']) : [],
         status = json['Status'],
-        dealType = json['Deal_Type'] ?? 'sell';
+        dealType = json['Deal_Type'] ?? 'sell',
+        userPhoneNumber = json['User_Phone_Number'];
 
   Map<String, Object?> toJson() => {
         'ISBN': isbn,
@@ -65,5 +67,6 @@ class BookModel {
         'Status': status,
         'Deal_Type': dealType,
         'Ratings': ratings,
+        'User_Phone_Number': userPhoneNumber,
       };
 }

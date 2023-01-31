@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:kitaby/features/order/models/order_model.dart';
+import 'package:kitaby/features/order/presentation/pages/order_details_page.dart.dart';
 
 class OrderContainer extends StatelessWidget {
   const OrderContainer({
@@ -88,46 +89,53 @@ class OrderContainer extends StatelessWidget {
                     SizedBox(
                       width: 52.w,
                     ),
-                    SizedBox(
-                      width: 100.w,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          // Text(
-                          //   'طلب: ${order.id}',
-                          //   style: Theme.of(context)
-                          //       .textTheme
-                          //       .bodyLarge!
-                          //       .copyWith(
-                          //           fontWeight: FontWeight.bold,
-                          //           fontSize: 16.sp,
-                          //           overflow: TextOverflow.ellipsis),
-                          // ),
-                          // SizedBox(
-                          //   height: 8.32.h,
-                          // ),
-                          Text(
-                            order.status,
-                            style:
-                                Theme.of(context).textTheme.bodyLarge!.copyWith(
+                    Center(
+                      child: SizedBox(
+                        width: 100.w,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            Text(
+                              '${order.id}',
+                              textDirection: TextDirection.ltr,
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyLarge!
+                                  .copyWith(
                                       fontWeight: FontWeight.bold,
                                       fontSize: 16.sp,
-                                      color: const Color(0xff569750),
-                                    ),
-                          ),
-                          SizedBox(
-                            height: 9.h,
-                          ),
-                          Text(
-                            '${order.totalPrice} د.ل',
-                            style:
-                                Theme.of(context).textTheme.bodyLarge!.copyWith(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 16.sp,
-                                    ),
-                          ),
-                        ],
+                                      overflow: TextOverflow.ellipsis),
+                            ),
+                            SizedBox(
+                              height: 8.32.h,
+                            ),
+                            Text(
+                              order.status,
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyLarge!
+                                  .copyWith(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16.sp,
+                                    color: const Color(0xff569750),
+                                  ),
+                            ),
+                            SizedBox(
+                              height: 9.h,
+                            ),
+                            Text(
+                              '${order.totalPrice} د.ل',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyLarge!
+                                  .copyWith(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16.sp,
+                                  ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ],
@@ -136,38 +144,42 @@ class OrderContainer extends StatelessWidget {
               SizedBox(
                 height: 43.h,
               ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Container(
-                    alignment: Alignment.center,
-                    width: 216.w,
-                    height: 33.h,
-                    decoration: BoxDecoration(
-                      border: Border.all(
-                        color: accentColor,
-                      ),
-                      borderRadius: BorderRadius.circular(10),
+              GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const OrderDetails(),
                     ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          'تفاصيل الطلب',
-                          style:
-                              Theme.of(context).textTheme.bodyMedium!.copyWith(
-                                    color: accentColor,
-                                    fontSize: 12.sp,
-                                  ),
-                        ),
-                        SizedBox(
-                          width: 10.w,
-                        ),
-                        Icon(Icons.arrow_forward_ios, size: 12.sp),
-                      ],
+                  );
+                },
+                child: Container(
+                  alignment: Alignment.center,
+                  width: 216.w,
+                  height: 33.h,
+                  decoration: BoxDecoration(
+                    border: Border.all(
+                      color: accentColor,
                     ),
+                    borderRadius: BorderRadius.circular(10),
                   ),
-                ],
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        'تفاصيل الطلب',
+                        style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                              color: accentColor,
+                              fontSize: 12.sp,
+                            ),
+                      ),
+                      SizedBox(
+                        width: 10.w,
+                      ),
+                      Icon(Icons.arrow_forward_ios, size: 12.sp),
+                    ],
+                  ),
+                ),
               )
             ],
           ),

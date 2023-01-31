@@ -9,9 +9,15 @@ import '../widgets/book_container.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-class StoreBooksPage extends StatelessWidget {
+class StoreBooksPage extends StatefulWidget {
   const StoreBooksPage({super.key});
 
+  @override
+  State<StoreBooksPage> createState() => _StoreBooksPageState();
+}
+
+class _StoreBooksPageState extends State<StoreBooksPage> {
+  String searchText = '';
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
@@ -19,7 +25,10 @@ class StoreBooksPage extends StatelessWidget {
     return Directionality(
       textDirection: TextDirection.rtl,
       child: Scaffold(
-        appBar: const BaseAppBar(title: 'كتب المتجر'),
+        appBar: const BaseAppBar(
+          title: 'كتب المتجر',
+          leading: SizedBox(),
+        ),
         body: Padding(
           padding: EdgeInsets.symmetric(horizontal: 16.w),
           child: Column(
@@ -51,6 +60,11 @@ class StoreBooksPage extends StatelessWidget {
                       ),
                     ),
                   ),
+                  onChanged: (value) {
+                    setState(() {
+                      searchText = value;
+                    });
+                  },
                 ),
               ),
               SizedBox(
@@ -74,18 +88,25 @@ class StoreBooksPage extends StatelessWidget {
                                   crossAxisSpacing: 16.w,
                                   mainAxisSpacing: 16.w,
                                   children: [
-                                    ...snapshot.data!.docs.map(
-                                      (doc) {
-                                        Map<String, dynamic> data =
-                                            doc.data() as Map<String, dynamic>;
-                                        final book = BookModel.fromJson(data);
-                                        return BookContainer(
-                                          book: book,
-                                        );
-                                      },
-                                    ).where((doc) =>
-                                        doc.book.status == true &&
-                                        doc.book.quantity > 0),
+                                    ...snapshot.data!.docs
+                                        .map(
+                                          (doc) {
+                                            Map<String, dynamic> data = doc
+                                                .data() as Map<String, dynamic>;
+                                            final book =
+                                                BookModel.fromJson(data);
+                                            return BookContainer(
+                                              book: book,
+                                            );
+                                          },
+                                        )
+                                        .where((doc) =>
+                                            doc.book.status == true &&
+                                            doc.book.quantity > 0)
+                                        .where(
+                                          (doc) => doc.book.title
+                                              .contains(searchText),
+                                        ),
                                   ],
                                 )
                               : const BaseProgressIndicator();

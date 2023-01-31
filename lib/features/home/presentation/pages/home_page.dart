@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:kitaby/core/presentation/pages/nav_bar_base.dart';
 import 'package:kitaby/core/presentation/widgets/base_progress_indicator.dart';
 import 'package:kitaby/features/customer_store/presentation/pages/add_book_form.dart';
 import 'package:kitaby/features/home/presentation/widgets/books_column.dart';
@@ -13,8 +14,10 @@ import 'package:kitaby/core/data/models/book_model.dart';
 import 'package:kitaby/features/store_books/presentation/pages/store_book_details_page.dart';
 import 'package:kitaby/utils/constants.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
+import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../authentication/presentation/pages/login_page.dart';
+import '../../../customer_store/app/add_customer_book_bloc/add_customer_book_bloc.dart';
+import '../../../customer_store/app/select_image_bloc/select_image_bloc.dart';
 import '../../../customer_store/presentation/pages/customers_books_page.dart';
 
 class HomePage extends StatefulWidget {
@@ -106,7 +109,18 @@ class _HomePageState extends State<HomePage> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => const AddBookForm(),
+                                builder: (context) => MultiBlocProvider(
+                                  providers: [
+                                    BlocProvider(
+                                      create: (context) =>
+                                          AddCustomerBookBloc(),
+                                    ),
+                                    BlocProvider(
+                                      create: (context) => SelectImageBloc(),
+                                    ),
+                                  ],
+                                  child: const AddBookForm(),
+                                ),
                               ),
                             );
                           },
@@ -134,7 +148,12 @@ class _HomePageState extends State<HomePage> {
 
                             WidgetsBinding.instance.addPostFrameCallback(
                               (_) {
-                                Navigator.pop(context);
+                                Navigator.pushReplacement(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => const NavBarBase(),
+                                  ),
+                                );
                               },
                             );
                           },
@@ -171,33 +190,37 @@ class _HomePageState extends State<HomePage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 SizedBox(
-                  height: 43.h,
+                  height: 10.h,
                 ),
                 Text(
-                  'كتب متداولة',
+                  'مرحبا في كتابي!',
                   style: Theme.of(context).textTheme.bodyLarge!.copyWith(
                         fontWeight: FontWeight.bold,
                         fontSize: 24.sp,
+                        color: Theme.of(context).accentColor.withOpacity(.7),
                       ),
                 ),
                 SizedBox(
-                  height: 26.h,
+                  height: 30.h,
                 ),
                 SingleChildScrollView(
                   scrollDirection: Axis.horizontal,
                   child: FutureBuilder(
-                      future: books.orderBy('ISBN').get(),
+                      future: books.limit(6).get(),
                       builder: (context, snapshot) {
                         return snapshot.connectionState == ConnectionState.done
                             ? Row(
                                 children: [
-                                  ...snapshot.data!.docs.where((doc) {
-                                    Map<String, dynamic> data =
-                                        doc.data() as Map<String, dynamic>;
-                                    final book = BookModel.fromJson(data);
-                                    return book.status == true &&
-                                        book.quantity > 0;
-                                  }).map(
+                                  ...snapshot.data!.docs.where(
+                                    (doc) {
+                                      Map<String, dynamic> data =
+                                          doc.data() as Map<String, dynamic>;
+                                      final book = BookModel.fromJson(data);
+
+                                      return book.status == true &&
+                                          book.quantity > 0;
+                                    },
+                                  ).map(
                                     (doc) {
                                       Map<String, dynamic> data =
                                           doc.data() as Map<String, dynamic>;
@@ -205,17 +228,19 @@ class _HomePageState extends State<HomePage> {
                                       return Row(
                                         children: [
                                           InkWell(
-                                              onTap: () {
-                                                Navigator.push(
-                                                  context,
-                                                  MaterialPageRoute(
-                                                    builder: (context) =>
-                                                        StoreBookDetailsPage(
-                                                            book: book),
+                                            onTap: () {
+                                              Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      StoreBookDetailsPage(
+                                                    book: book,
                                                   ),
-                                                );
-                                              },
-                                              child: BooksColumn(book: book)),
+                                                ),
+                                              );
+                                            },
+                                            child: BooksColumn(book: book),
+                                          ),
                                           SizedBox(
                                             width: 26.w,
                                           ),
@@ -229,14 +254,14 @@ class _HomePageState extends State<HomePage> {
                       }),
                 ),
                 SizedBox(
-                  height: 38.h,
+                  height: 20.h,
                 ),
                 Container(
                   margin: EdgeInsets.only(left: 16.w, right: 20.w),
                   child: const Divider(),
                 ),
                 SizedBox(
-                  height: 39.h,
+                  height: 20.h,
                 ),
                 Text(
                   'جديد',
@@ -251,43 +276,47 @@ class _HomePageState extends State<HomePage> {
                 Column(
                   children: [
                     FutureBuilder(
-                      future: books.orderBy('ISBN', descending: true).get(),
+                      future: books.limit(10).get(),
                       builder: (context, snapshot) {
                         return snapshot.connectionState == ConnectionState.done
                             ? Column(
                                 children: [
-                                  ...snapshot.data!.docs.where(
-                                    (doc) {
-                                      Map<String, dynamic> data =
-                                          doc.data() as Map<String, dynamic>;
-                                      final book = BookModel.fromJson(data);
-                                      return book.status == true &&
-                                          book.quantity > 0;
-                                    },
-                                  ).map((doc) {
-                                    Map<String, dynamic> data =
-                                        doc.data() as Map<String, dynamic>;
-                                    final book = BookModel.fromJson(data);
-                                    return Column(
-                                      children: [
-                                        InkWell(
-                                            onTap: () {
-                                              Navigator.push(
-                                                context,
-                                                MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      StoreBookDetailsPage(
-                                                          book: book),
-                                                ),
-                                              );
-                                            },
-                                            child: BooksRow(book: book)),
-                                        SizedBox(
-                                          height: 9.h,
-                                        ),
-                                      ],
-                                    );
-                                  }),
+                                  ...snapshot.data!.docs
+                                      .where(
+                                        (doc) {
+                                          Map<String, dynamic> data = doc.data()
+                                              as Map<String, dynamic>;
+                                          final book = BookModel.fromJson(data);
+                                          return book.status == true &&
+                                              book.quantity > 0;
+                                        },
+                                      )
+                                      .map((doc) {
+                                        Map<String, dynamic> data =
+                                            doc.data() as Map<String, dynamic>;
+                                        final book = BookModel.fromJson(data);
+                                        return Column(
+                                          children: [
+                                            InkWell(
+                                                onTap: () {
+                                                  Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          StoreBookDetailsPage(
+                                                              book: book),
+                                                    ),
+                                                  );
+                                                },
+                                                child: BooksRow(book: book)),
+                                            SizedBox(
+                                              height: 9.h,
+                                            ),
+                                          ],
+                                        );
+                                      })
+                                      .toList()
+                                      .reversed,
                                 ],
                               )
                             : const BaseProgressIndicator();

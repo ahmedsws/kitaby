@@ -55,7 +55,6 @@ class _PaymentFormState extends State<PaymentForm> {
 
   @override
   Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
     return Directionality(
       textDirection: TextDirection.rtl,
       child: BlocListener<PlaceOrderBloc, PlaceOrderState>(
@@ -190,11 +189,21 @@ class _PaymentFormState extends State<PaymentForm> {
                                           message:
                                               'رصيد البطاقة غير كافي لإجراء الطلب!',
                                         );
+                                        setState(
+                                          () {
+                                            isLoging = false;
+                                          },
+                                        );
                                       }
                                     } else {
                                       buildBaseFlushBar(
                                         context: context,
                                         message: 'خطأ في بيانات الدفع!',
+                                      );
+                                      setState(
+                                        () {
+                                          isLoging = false;
+                                        },
                                       );
                                     }
                                   } else {
@@ -202,17 +211,32 @@ class _PaymentFormState extends State<PaymentForm> {
                                       context: context,
                                       message: 'خطأ في بيانات الدفع!',
                                     );
+                                    setState(
+                                      () {
+                                        isLoging = false;
+                                      },
+                                    );
                                   }
                                 } else {
                                   buildBaseFlushBar(
                                     context: context,
                                     message: 'خطأ في بيانات الدفع!',
                                   );
+                                  setState(
+                                    () {
+                                      isLoging = false;
+                                    },
+                                  );
                                 }
                               } else {
                                 buildBaseFlushBar(
                                   context: context,
                                   message: 'خطأ في بيانات الدفع!',
+                                );
+                                setState(
+                                  () {
+                                    isLoging = false;
+                                  },
                                 );
                               }
                             },

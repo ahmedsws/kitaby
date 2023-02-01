@@ -4,8 +4,12 @@ import 'package:kitaby/core/presentation/widgets/base_button.dart';
 import 'package:kitaby/utils/constants.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
+import '../../models/order_model.dart';
+
 class OrderDetails extends StatelessWidget {
-  const OrderDetails({Key? key}) : super(key: key);
+  const OrderDetails({Key? key, required this.order}) : super(key: key);
+
+  final OrderModel order;
 
   @override
   Widget build(BuildContext context) {
@@ -80,19 +84,23 @@ class OrderDetails extends StatelessWidget {
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Text(
-                          '187254',
-                          style:
-                              Theme.of(context).textTheme.bodyLarge!.copyWith(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 14.sp,
-                                  ),
+                        SizedBox(
+                          width: 100.w,
+                          child: Text(
+                            order.id,
+                            style:
+                                Theme.of(context).textTheme.bodyLarge!.copyWith(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 14.sp,
+                                    ),
+                            overflow: TextOverflow.ellipsis,
+                          ),
                         ),
                         SizedBox(
                           height: 13.06.h,
                         ),
                         Text(
-                          'قيد التوصيل',
+                          order.status,
                           style:
                               Theme.of(context).textTheme.bodyLarge!.copyWith(
                                     fontWeight: FontWeight.bold,
@@ -104,7 +112,7 @@ class OrderDetails extends StatelessWidget {
                           height: 13.06.h,
                         ),
                         Text(
-                          '130 د.ل',
+                          '${order.totalPrice} د.ل',
                           style:
                               Theme.of(context).textTheme.bodyLarge!.copyWith(
                                     fontWeight: FontWeight.bold,
@@ -278,7 +286,12 @@ class OrderDetails extends StatelessWidget {
               SizedBox(
                 height: 20.h,
               ),
-              const BaseButton(text: 'العودة'),
+              BaseButton(
+                text: 'العودة',
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+              ),
             ],
           ),
         ),

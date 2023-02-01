@@ -201,7 +201,6 @@ class _StoreBookDetailsPageState extends State<StoreBookDetailsPage> {
                                                           if (user != null) {
                                                             if (starRatePressed !=
                                                                 0) {
-                                                              // TODO make the rating related to the user
                                                               FirebaseFirestore
                                                                   .instance
                                                                   .collection(

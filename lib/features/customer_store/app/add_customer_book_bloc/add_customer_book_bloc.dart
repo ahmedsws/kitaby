@@ -27,54 +27,56 @@ class AddCustomerBookBloc
       quantityController = TextEditingController();
 
   AddCustomerBookBloc() : super(AddCustomerBookInitial()) {
-    on<AddCustomerBookEvent>((event, emit) async {
-      emit(AddCustomerBookLoading());
+    on<AddCustomerBookEvent>(
+      (event, emit) async {
+        emit(AddCustomerBookLoading());
 
-      final user = await Constants.getUser();
+        final user = await Constants.getUser();
 
-      CollectionReference userBooks = FirebaseFirestore.instance
-          .collection('Users')
-          .doc(user!.id)
-          .collection('Books');
-
-      final result = await userBooks.doc(isbnController.text).get();
-
-      if (result.exists) {
-        emit(AddCustomerBookError());
-      } else {
-        final ref = firebase_storage.FirebaseStorage.instance
-            .ref('book_covers')
-            .child(isbnController.text);
-        await ref.putFile(event.image!);
-
-        final downloadUrl = await ref.getDownloadURL();
-
-        await FirebaseFirestore.instance
+        CollectionReference userBooks = FirebaseFirestore.instance
             .collection('Users')
-            .doc(user.phoneNumber)
-            .collection('Books')
-            .doc(isbnController.text)
-            .set(
-              BookModel(
-                isbn: isbnController.text,
-                title: titleController.text,
-                author: authorController.text,
-                publisher: publisherController.text,
-                edition: editionController.text,
-                description: descriptionController.text,
-                coverImageUrl: downloadUrl,
-                category: 'فكر',
-                pageCount: int.parse(pageCountController.text),
-                quantity: int.parse(quantityController.text),
-                price: num.parse(priceController.text),
-                dealType: event.selectedDeal,
-                status: true,
-                userPhoneNumber: user.phoneNumber,
-              ).toJson(),
-            );
+            .doc(user!.id)
+            .collection('Books');
 
-        emit(AddCustomerBookAdded());
-      }
-    });
+        final result = await userBooks.doc(isbnController.text).get();
+
+        if (result.exists) {
+          emit(AddCustomerBookError());
+        } else {
+          final ref = firebase_storage.FirebaseStorage.instance
+              .ref('book_covers')
+              .child(isbnController.text);
+          await ref.putFile(event.image!);
+
+          final downloadUrl = await ref.getDownloadURL();
+
+          await FirebaseFirestore.instance
+              .collection('Users')
+              .doc(user.phoneNumber)
+              .collection('Books')
+              .doc(isbnController.text)
+              .set(
+                BookModel(
+                  isbn: isbnController.text,
+                  title: titleController.text,
+                  author: authorController.text,
+                  publisher: publisherController.text,
+                  edition: editionController.text,
+                  description: descriptionController.text,
+                  coverImageUrl: downloadUrl,
+                  category: 'فكر',
+                  pageCount: int.parse(pageCountController.text),
+                  quantity: int.parse(quantityController.text),
+                  price: num.parse(priceController.text),
+                  dealType: event.selectedDeal,
+                  status: true,
+                  userPhoneNumber: user.phoneNumber,
+                ).toJson(),
+              );
+
+          emit(AddCustomerBookAdded());
+        }
+      },
+    );
   }
 }

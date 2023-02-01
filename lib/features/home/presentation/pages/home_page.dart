@@ -7,6 +7,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:kitaby/core/presentation/pages/nav_bar_base.dart';
 import 'package:kitaby/core/presentation/widgets/base_progress_indicator.dart';
 import 'package:kitaby/features/customer_store/presentation/pages/add_book_form.dart';
+import 'package:kitaby/features/customer_store/presentation/pages/customer_books_page.dart';
 import 'package:kitaby/features/home/presentation/widgets/books_column.dart';
 import 'package:kitaby/features/authentication/data/models/user_model.dart';
 import 'package:kitaby/features/home/presentation/widgets/books_row.dart';
@@ -121,6 +122,31 @@ class _HomePageState extends State<HomePage> {
                                   ],
                                   child: const AddBookForm(),
                                 ),
+                              ),
+                            );
+                          },
+                        )
+                      : const SizedBox();
+                },
+              ),
+              FutureBuilder(
+                future: getUser(),
+                builder: (context, snapshot) {
+                  return snapshot.data != null
+                      ? ListTile(
+                          title: Text(
+                            'الكتب الخاصة بي',
+                            style:
+                                Theme.of(context).textTheme.bodyText1!.copyWith(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16.sp,
+                                    ),
+                          ),
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const CustomerBooksPage(),
                               ),
                             );
                           },

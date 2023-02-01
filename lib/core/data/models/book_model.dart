@@ -1,3 +1,5 @@
+import 'package:kitaby/features/authentication/data/models/user_model.dart';
+
 class BookModel {
   final String isbn,
       title,
@@ -32,6 +34,38 @@ class BookModel {
     this.dealType = 'بيع',
     this.userPhoneNumber,
   });
+
+  BookModel copywith({
+    String? isbn,
+    String? title,
+    String? author,
+    String? publisher,
+    String? edition,
+    String? description,
+    String? coverImageUrl,
+    String? category,
+    String? dealType,
+    String? userPhoneNumber,
+    int? pageCount,
+    quantity,
+    List<int>? ratings,
+    num? price,
+    bool? status,
+  }) {
+    return BookModel(
+        isbn: isbn ?? this.isbn,
+        title: title ?? this.title,
+        author: author ?? this.author,
+        publisher: publisher ?? this.publisher,
+        edition: edition ?? this.edition,
+        description: description ?? this.description,
+        coverImageUrl: coverImageUrl ?? this.coverImageUrl,
+        category: category ?? this.category,
+        pageCount: pageCount ?? this.pageCount,
+        quantity: quantity ?? this.quantity,
+        price: price ?? this.price,
+        status: status ?? this.status);
+  }
 
   BookModel.fromJson(Map<String, dynamic> json)
       : isbn = json['ISBN'],
@@ -69,4 +103,16 @@ class BookModel {
         'Ratings': ratings,
         'User_Phone_Number': userPhoneNumber,
       };
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+
+    return other is BookModel &&
+        other.userPhoneNumber == userPhoneNumber &&
+        other.isbn == isbn;
+  }
+
+  @override
+  int get hashCode => isbn.hashCode ^ isbn.hashCode;
 }

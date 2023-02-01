@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:kitaby/core/presentation/widgets/base_progress_indicator.dart';
 import 'package:kitaby/core/data/models/book_model.dart';
 import 'package:kitaby/features/authentication/data/models/user_model.dart';
+import 'package:kitaby/features/customer_store/presentation/pages/customer_books_page.dart';
+import 'package:kitaby/features/customer_store/presentation/pages/edit_book_form.dart';
 import 'package:kitaby/utils/constants.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -11,6 +13,9 @@ import '../../../../core/presentation/widgets/base_flushbar.dart';
 import '../../../authentication/presentation/pages/login_page.dart';
 import '../../../store_books/app/favorite_book_bloc/favorite_book_bloc.dart';
 import 'package:url_launcher/url_launcher.dart';
+
+import '../../app/edit_customer_bloc/edit_customer_book_bloc.dart';
+import '../../app/select_image_bloc/select_image_bloc.dart';
 
 class CustomerBookDetailsPage extends StatefulWidget {
   const CustomerBookDetailsPage({
@@ -186,6 +191,88 @@ class _CustomerBookDetailsPageState extends State<CustomerBookDetailsPage> {
                             );
                           },
                         ),
+                        FutureBuilder(
+                          future: Constants.getUser(),
+                          builder: (context, snapshot) {
+                            return snapshot.connectionState ==
+                                    ConnectionState.done
+                                ? snapshot.data!.phoneNumber ==
+                                        widget.book.userPhoneNumber
+                                    ? GestureDetector(
+                                        child: Container(
+                                          padding: EdgeInsets.symmetric(
+                                            vertical: 16.h,
+                                            horizontal: 10,
+                                          ),
+                                          child: Text(
+                                            'تعديل الكتاب',
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .bodyText1,
+                                          ),
+                                        ),
+                                        onTap: () async {
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) =>
+                                                  MultiBlocProvider(
+                                                providers: [
+                                                  BlocProvider(
+                                                    create: (context) =>
+                                                        EditCustomerBookBloc(),
+                                                  ),
+                                                  BlocProvider(
+                                                    create: (context) =>
+                                                        SelectImageBloc(),
+                                                  ),
+                                                ],
+                                                child: EditBookForm(
+                                                  book: widget.book,
+                                                ),
+                                              ),
+                                            ),
+                                          );
+                                        },
+                                      )
+                                    : const SizedBox()
+                                : const SizedBox();
+                          },
+                        ),
+                        FutureBuilder(
+                          future: Constants.getUser(),
+                          builder: (context, snapshot) {
+                            return snapshot.connectionState ==
+                                    ConnectionState.done
+                                ? snapshot.data!.phoneNumber ==
+                                        widget.book.userPhoneNumber
+                                    ? GestureDetector(
+                                        child: Container(
+                                          padding: EdgeInsets.symmetric(
+                                            vertical: 16.h,
+                                            horizontal: 10,
+                                          ),
+                                          child: Text(
+                                            widget.book.status
+                                                ? 'إلغاء تفعيل الكتاب'
+                                                : 'تفعيل الكتاب',
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .bodyText1,
+                                          ),
+                                        ),
+                                        onTap: () async {
+                                          buildConfirmDialog(
+                                            context,
+                                            Theme.of(context).accentColor,
+                                            widget.book.status,
+                                          );
+                                        },
+                                      )
+                                    : const SizedBox()
+                                : const SizedBox();
+                          },
+                        ),
                       ],
                     ),
                   ),
@@ -303,7 +390,6 @@ class _CustomerBookDetailsPageState extends State<CustomerBookDetailsPage> {
                             SizedBox(
                               height: 15.h,
                             ),
-                            // ـاكد ان الريتينق فيه لكتاب المستخدم
                             FutureBuilder(
                                 future: Constants.getUser(),
                                 builder: (context, snapshot) {
@@ -327,7 +413,6 @@ class _CustomerBookDetailsPageState extends State<CustomerBookDetailsPage> {
                                                         if (user != null) {
                                                           if (starRatePressed !=
                                                               0) {
-                                                            // TODO make the rating related to the user
                                                             FirebaseFirestore
                                                                 .instance
                                                                 .collection(
@@ -573,7 +658,7 @@ class _CustomerBookDetailsPageState extends State<CustomerBookDetailsPage> {
                                         .doc(widget.book.userPhoneNumber)
                                         .get(),
                                     builder: (context, snapshot) {
-                                      late final userRating;
+                                      late final num userRating;
                                       if (snapshot.connectionState ==
                                           ConnectionState.done) {
                                         final userRated = UserModel.fromJson(
@@ -661,6 +746,103 @@ class _CustomerBookDetailsPageState extends State<CustomerBookDetailsPage> {
               ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+
+  Future<bool?> buildConfirmDialog(
+      BuildContext context, Color accentColor, bool status) {
+    final textTheme = Theme.of(context).textTheme;
+    return showDialog(
+      context: context,
+      builder: (context) => Directionality(
+        textDirection: TextDirection.rtl,
+        child: AlertDialog(
+          contentTextStyle: textTheme.bodyText1,
+          title: Text(
+            status ? 'تأكيد إلغاء التفعيل' : 'تأكيد التفعيل',
+            style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                ),
+          ),
+          content: Text(
+            status
+                ? 'هل أنت متأكد من إلغاء تفعيل هذا الكتاب؟'
+                : 'هل أنت متأكد من تفعيل هذا الكتاب؟',
+            style: textTheme.bodyText2,
+          ),
+          actions: [
+            TextButton(
+              onPressed: () async {
+                await FirebaseFirestore.instance
+                    .collection('Users')
+                    .doc(widget.book.userPhoneNumber)
+                    .collection('Books')
+                    .doc(widget.book.isbn)
+                    .update(
+                  {
+                    'Status': !status,
+                  },
+                );
+                Navigator.pop(context);
+                Navigator.pop(context);
+                Navigator.pop(context);
+                Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => CustomerBooksPage(),
+                    ));
+                // Navigator.pushReplacement(
+                //   context,
+                //   MaterialPageRoute(
+                //     builder: (context) => CustomerBookDetailsPage(
+                //       book: widget.book.copywith(
+                //         author: widget.book.author,
+                //         category: widget.book.category,
+                //         coverImageUrl: widget.book.coverImageUrl,
+                //         dealType: widget.book.dealType,
+                //         description: widget.book.description,
+                //         edition: widget.book.edition,
+                //         isbn: widget.book.isbn,
+                //         pageCount: widget.book.pageCount,
+                //         price: widget.book.price,
+                //         publisher: widget.book.publisher,
+                //         quantity: widget.book.quantity,
+                //         ratings: widget.book.ratings,
+                //         title: widget.book.title,
+                //         userPhoneNumber: widget.book.userPhoneNumber,
+                //         status: !status,
+                //       ),
+                //     ),
+                //   ),
+                // );
+
+                buildBaseFlushBar(
+                  context: context,
+                  message: status ? 'تم إلغاء تفعيل الكتاب' : 'تم تفعيل الكتاب',
+                  titleText: 'تمت العملية بنجاح!',
+                  backgroundColor: Colors.green,
+                );
+              },
+              child: Text(
+                'تأكيد',
+                style: textTheme.bodyText2!.copyWith(
+                  color: accentColor,
+                ),
+              ),
+            ),
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(false),
+              child: Text(
+                'الغاء',
+                style: textTheme.bodyText2!.copyWith(
+                  color: accentColor.withOpacity(.4),
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );

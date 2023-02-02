@@ -6,10 +6,12 @@ class BaseButton extends StatelessWidget {
     Key? key,
     required this.text,
     this.onPressed,
+    this.bgColor,
   }) : super(key: key);
 
   final String text;
   final void Function()? onPressed;
+  final Color? bgColor;
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +22,7 @@ class BaseButton extends StatelessWidget {
           Size(319.w, 60.h),
         ),
         backgroundColor:
-            MaterialStateProperty.all(Theme.of(context).accentColor),
+            MaterialStateProperty.all(bgColor ?? Theme.of(context).accentColor),
         shape: MaterialStateProperty.all(
           RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(15.r),

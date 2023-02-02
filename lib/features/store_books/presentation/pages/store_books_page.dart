@@ -18,6 +18,9 @@ class StoreBooksPage extends StatefulWidget {
 
 class _StoreBooksPageState extends State<StoreBooksPage> {
   String searchText = '';
+  List<String> filter = [];
+  List<String> searchFilters = ['علوم', 'فكر'];
+
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
@@ -25,9 +28,78 @@ class _StoreBooksPageState extends State<StoreBooksPage> {
     return Directionality(
       textDirection: TextDirection.rtl,
       child: Scaffold(
-        appBar: const BaseAppBar(
+        appBar: BaseAppBar(
           title: 'كتب المتجر',
-          leading: SizedBox(),
+          leading: IconButton(
+              onPressed: () {
+                showDialog(
+                  context: context,
+                  builder: (context) => Directionality(
+                    textDirection: TextDirection.rtl,
+                    child: SimpleDialog(
+                      title: Center(
+                        child: Text(
+                          'فلترة',
+                          style: textTheme.bodyText1!.copyWith(
+                            fontSize: 24.sp,
+                            fontWeight: FontWeight.bold,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ),
+                      children: [
+                        Wrap(
+                          children: [
+                            ...searchFilters.map(
+                              (searchFilter) => InkWell(
+                                onTap: () {
+                                  filter.contains(searchFilter)
+                                      ? setState(() {
+                                          filter.remove(searchFilter);
+                                        })
+                                      : setState(() {
+                                          filter.add(searchFilter);
+                                        });
+                                  Navigator.pop(context);
+                                },
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    border: Border.all(
+                                      color: Theme.of(context).accentColor,
+                                    ),
+                                    borderRadius: BorderRadius.circular(
+                                      10.r,
+                                    ),
+                                    color: filter.contains(searchFilter)
+                                        ? const Color.fromARGB(
+                                            255, 135, 226, 138)
+                                        : null,
+                                  ),
+                                  margin: EdgeInsets.all(10),
+                                  padding: EdgeInsets.all(10),
+                                  child: Text(
+                                    searchFilter,
+                                    style: textTheme.bodyText1!.copyWith(
+                                      fontSize: 16.sp,
+                                      fontWeight: FontWeight.bold,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        )
+                      ],
+                    ),
+                  ),
+                );
+              },
+              icon: Icon(
+                filter.isEmpty
+                    ? Icons.filter_alt_outlined
+                    : Icons.filter_alt_rounded,
+              )),
         ),
         body: Padding(
           padding: EdgeInsets.symmetric(horizontal: 16.w),
@@ -106,6 +178,14 @@ class _StoreBooksPageState extends State<StoreBooksPage> {
                                         .where(
                                           (doc) => doc.book.title
                                               .contains(searchText),
+                                        )
+                                        .where(
+                                          (doc) {
+                                            return filter.isNotEmpty
+                                                ? filter
+                                                    .contains(doc.book.category)
+                                                : true;
+                                          },
                                         ),
                                   ],
                                 )

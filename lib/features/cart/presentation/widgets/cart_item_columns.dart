@@ -64,7 +64,7 @@ class CartItemsColumn extends StatelessWidget {
                                         context
                                             .read<TotalPriceCounterCubit>()
                                             .calcTotalPrice(
-                                              totalPrice: book.price *
+                                              totalPrice: book.price! *
                                                   cartItem.quantity,
                                             );
 

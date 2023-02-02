@@ -24,6 +24,7 @@ class AddCustomerBookBloc
       editionController = TextEditingController(),
       descriptionController = TextEditingController(),
       editionLanguageController = TextEditingController(),
+      categoryController = TextEditingController(),
       quantityController = TextEditingController();
 
   AddCustomerBookBloc() : super(AddCustomerBookInitial()) {
@@ -42,6 +43,7 @@ class AddCustomerBookBloc
 
         if (result.exists) {
           emit(AddCustomerBookError());
+          emit(AddCustomerBookInitial());
         } else {
           final ref = firebase_storage.FirebaseStorage.instance
               .ref('book_covers')
@@ -64,7 +66,7 @@ class AddCustomerBookBloc
                   edition: editionController.text,
                   description: descriptionController.text,
                   coverImageUrl: downloadUrl,
-                  category: 'فكر',
+                  category: categoryController.text,
                   pageCount: int.parse(pageCountController.text),
                   quantity: int.parse(quantityController.text),
                   price: num.parse(priceController.text),

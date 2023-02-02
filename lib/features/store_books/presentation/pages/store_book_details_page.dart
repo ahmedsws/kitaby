@@ -8,6 +8,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/presentation/widgets/base_button.dart';
 import '../../../../core/presentation/widgets/base_flushbar.dart';
 import '../../../authentication/presentation/pages/login_page.dart';
+import '../../../cart/app/cart_bloc/cart_bloc.dart';
 import '../../app/favorite_book_bloc/favorite_book_bloc.dart';
 
 class StoreBookDetailsPage extends StatefulWidget {
@@ -36,7 +37,8 @@ class _StoreBookDetailsPageState extends State<StoreBookDetailsPage> {
     return Directionality(
       textDirection: TextDirection.rtl,
       child: BlocProvider(
-        create: (context) => FavoriteBookBloc(),
+        create: (context) => FavoriteBookBloc()
+          ..add(CheckFavoritedBook(bookISBN: widget.book.isbn)),
         child: Scaffold(
           appBar: AppBar(
             actions: [
@@ -49,13 +51,11 @@ class _StoreBookDetailsPageState extends State<StoreBookDetailsPage> {
                     }
                     return InkWell(
                       onTap: () {
-                        if (favoriteBookState is FavoriteBookInitial) {
-                          context.read<FavoriteBookBloc>().add(
-                                FavoriteBookEvent(
-                                  bookISBN: widget.book.isbn,
-                                ),
-                              );
-                        }
+                        context.read<FavoriteBookBloc>().add(
+                              FavoriteEvent(
+                                bookISBN: widget.book.isbn,
+                              ),
+                            );
                       },
                       child: favoriteBookState is BookFavorited
                           ? Icon(Icons.bookmark,
@@ -405,65 +405,86 @@ class _StoreBookDetailsPageState extends State<StoreBookDetailsPage> {
                     ),
                   ],
                 ),
-                Positioned(
-                  bottom: 25.h,
-                  child: isAddingBook
-                      ? const BaseProgressIndicator()
-                      : BaseButton(
-                          onPressed: () async {
-                            setState(() {
-                              isAddingBook = true;
-                            });
-                            final user = await Constants.getUser();
+                BlocProvider(
+                  create: (context) => CartBloc()..add(CartEvent()),
+                  child: Positioned(
+                    bottom: 25.h,
+                    child: isAddingBook
+                        ? const BaseProgressIndicator()
+                        : BlocBuilder<CartBloc, CartState>(
+                            builder: (context, cartState) {
+                              if (cartState is CartItemsLoaded) {
+                                final checkItemInItems = cartState.cartItems!
+                                    .where((item) =>
+                                        item.bookISBN == widget.book.isbn);
 
-                            if (user != null) {
-                              FirebaseFirestore.instance
-                                  .collection('Users')
-                                  .doc(user.phoneNumber)
-                                  .collection('Cart')
-                                  .doc('cartDoc')
-                                  .collection('Cart_Items')
-                                  .add(
-                                {
-                                  "book_isbn": widget.book.isbn,
-                                  "quantity": 1,
-                                },
-                              ).then((value) {
-                                // WidgetsBinding.instance.addPostFrameCallback(
-                                //   (_) {
-                                //     Navigator.popUntil(
-                                //         context, (route) => route.isFirst);
-                                //   },
-                                // );
+                                return BaseButton(
+                                  onPressed: () async {
+                                    if (checkItemInItems.isEmpty) {
+                                      setState(() {
+                                        isAddingBook = true;
+                                      });
+                                      final user = await Constants.getUser();
 
-                                buildBaseFlushBar(
-                                  context: context,
-                                  titleText: 'نجحت العملية',
-                                  backgroundColor:
-                                      const Color.fromARGB(255, 103, 228, 107),
-                                  message: 'تمت إضافة الكتاب إلى السلة بنجاح!',
+                                      if (user != null) {
+                                        FirebaseFirestore.instance
+                                            .collection('Users')
+                                            .doc(user.phoneNumber)
+                                            .collection('Cart')
+                                            .doc('cartDoc')
+                                            .collection('Cart_Items')
+                                            .add(
+                                          {
+                                            "book_isbn": widget.book.isbn,
+                                            "quantity": 1,
+                                          },
+                                        ).then((value) {
+                                          Navigator.pop(context);
+
+                                          buildBaseFlushBar(
+                                            context: context,
+                                            titleText: 'نجحت العملية',
+                                            backgroundColor:
+                                                const Color.fromARGB(
+                                                    255, 103, 228, 107),
+                                            message:
+                                                'تمت إضافة الكتاب إلى السلة بنجاح!',
+                                          );
+                                        });
+                                      } else {
+                                        WidgetsBinding.instance
+                                            .addPostFrameCallback(
+                                          (timeStamp) {
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (context) =>
+                                                    const LoginPage(),
+                                              ),
+                                            );
+                                          },
+                                        );
+                                      }
+                                      setState(
+                                        () {
+                                          isAddingBook = false;
+                                        },
+                                      );
+                                    }
+                                  },
+                                  text: checkItemInItems.isEmpty
+                                      ? 'إضافة إلى السلة بسعر ${widget.book.price} د.ل'
+                                      : 'هذا الكتاب موجود في السلة',
+                                  bgColor: checkItemInItems.isNotEmpty
+                                      ? Colors.grey
+                                      : null,
                                 );
-                              });
-                            } else {
-                              WidgetsBinding.instance.addPostFrameCallback(
-                                (timeStamp) {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => const LoginPage(),
-                                    ),
-                                  );
-                                },
-                              );
-                            }
-                            setState(
-                              () {
-                                isAddingBook = false;
-                              },
-                            );
-                          },
-                          text: 'إضافة إلى السلة بسعر ${widget.book.price} د.ل',
-                        ),
+                              } else {
+                                return const BaseProgressIndicator();
+                              }
+                            },
+                          ),
+                  ),
                 ),
               ],
             ),

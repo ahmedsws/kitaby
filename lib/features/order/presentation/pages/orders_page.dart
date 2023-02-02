@@ -31,6 +31,7 @@ class OrdersPage extends StatelessWidget {
                         (order) {
                           return OrderContainer(
                             order: order,
+                            books: ordersState.books!,
                           );
                         },
                       ),

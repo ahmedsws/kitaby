@@ -1,18 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:kitaby/core/data/models/book_model.dart';
 import 'package:kitaby/features/order/models/order_model.dart';
 import 'package:kitaby/features/order/presentation/pages/order_details_page.dart.dart';
 
 class OrderContainer extends StatelessWidget {
-  const OrderContainer({
+  OrderContainer({
     Key? key,
     required this.order,
+    required this.books,
   }) : super(key: key);
 
   final OrderModel order;
+  final List<BookModel> books;
+
+  final List<BookModel> filteredBooks = [];
 
   @override
   Widget build(BuildContext context) {
+    double counter = 20;
+    for (var item in order.orderItems) {
+      filteredBooks.add(books.firstWhere((book) => book.isbn == item.bookISBN));
+    }
     final accentColor = Theme.of(context).accentColor;
     return Column(
       children: [
@@ -57,31 +66,19 @@ class OrderContainer extends StatelessWidget {
                         textDirection: TextDirection.rtl,
                         alignment: Alignment.center,
                         children: [
-                          Positioned(
-                            right: -40,
-                            child: Image.asset(
-                              'assets/images/book3.jpg',
-                              fit: BoxFit.fill,
-                              width: 67.w,
-                              height: 111.h,
-                            ),
-                          ),
-                          Positioned(
-                            right: -1,
-                            child: Image.asset(
-                              'assets/images/book2.jpg',
-                              fit: BoxFit.fill,
-                              width: 67.w,
-                              height: 111.h,
-                            ),
-                          ),
-                          Positioned(
-                            child: Image.asset(
-                              'assets/images/book1.jpg',
-                              fit: BoxFit.fill,
-                              width: 67.w,
-                              height: 111.h,
-                            ),
+                          ...filteredBooks.map(
+                            (book) {
+                              counter = counter - 20;
+                              return Positioned(
+                                right: counter,
+                                child: Image.network(
+                                  book.coverImageUrl,
+                                  fit: BoxFit.fill,
+                                  width: 67.w,
+                                  height: 111.h,
+                                ),
+                              );
+                            },
                           ),
                         ],
                       ),
@@ -149,7 +146,8 @@ class OrderContainer extends StatelessWidget {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => OrderDetails(order: order),
+                      builder: (context) =>
+                          OrderDetails(order: order, books: books),
                     ),
                   );
                 },

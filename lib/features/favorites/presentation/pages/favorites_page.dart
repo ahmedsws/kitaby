@@ -39,7 +39,21 @@ class FavoritesPage extends StatelessWidget {
                                 if (favorite != null) {
                                   return FavoriteContainer(book: favorite);
                                 } else {
-                                  return const SizedBox();
+                                  return SizedBox(
+                                    height: 150.h,
+                                    child: Center(
+                                      child: Text(
+                                        'لا توجد كتب في المفضلة حاليا!',
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .bodyLarge!
+                                            .copyWith(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 16.sp,
+                                            ),
+                                      ),
+                                    ),
+                                  );
                                 }
                               }),
                             ],

@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:kitaby/core/presentation/pages/nav_bar_base.dart';
 import 'package:kitaby/core/presentation/widgets/base_progress_indicator.dart';
+import 'package:kitaby/features/authentication/presentation/pages/edit_account_page.dart';
 import 'package:kitaby/features/customer_store/presentation/pages/add_book_form.dart';
 import 'package:kitaby/features/customer_store/presentation/pages/customer_books_page.dart';
 import 'package:kitaby/features/home/presentation/widgets/books_column.dart';
@@ -99,7 +100,7 @@ class _HomePageState extends State<HomePage> {
                   return snapshot.data != null
                       ? ListTile(
                           title: Text(
-                            'إضافة كتاب وتسويقه',
+                            'إضافة كتاب لتسويقه',
                             style:
                                 Theme.of(context).textTheme.bodyText1!.copyWith(
                                       fontWeight: FontWeight.bold,
@@ -147,6 +148,32 @@ class _HomePageState extends State<HomePage> {
                               context,
                               MaterialPageRoute(
                                 builder: (context) => const CustomerBooksPage(),
+                              ),
+                            );
+                          },
+                        )
+                      : const SizedBox();
+                },
+              ),
+              FutureBuilder(
+                future: getUser(),
+                builder: (context, snapshot) {
+                  return snapshot.data != null
+                      ? ListTile(
+                          title: Text(
+                            'تعديل الحساب',
+                            style:
+                                Theme.of(context).textTheme.bodyText1!.copyWith(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16.sp,
+                                    ),
+                          ),
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    EditAccountPage(user: snapshot.data!),
                               ),
                             );
                           },

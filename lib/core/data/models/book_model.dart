@@ -13,7 +13,7 @@ class BookModel {
   final String? userPhoneNumber;
   final int pageCount, quantity;
   final List<int> ratings;
-  final num price;
+  final num? price;
   final bool status;
 
   const BookModel({
@@ -28,7 +28,7 @@ class BookModel {
     // required this.publicationDate,
     required this.pageCount,
     required this.quantity,
-    required this.price,
+    this.price,
     this.ratings = const [],
     required this.status,
     this.dealType = 'بيع',

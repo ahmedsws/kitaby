@@ -185,6 +185,21 @@ class _AddBookFormState extends State<AddBookForm> {
                           : 'يجب ادخال عدد الطبعة',
                     ),
                     InputBoxColumn(
+                      label: 'الصنف',
+                      hintText: 'فكر',
+                      suffixIconData: Icons.mode_edit_outline,
+                      controller: context
+                          .read<AddCustomerBookBloc>()
+                          .categoryController,
+                      validator: (p0) => context
+                              .read<AddCustomerBookBloc>()
+                              .categoryController
+                              .text
+                              .isNotEmpty
+                          ? null
+                          : 'يجب ادخال الصنف',
+                    ),
+                    InputBoxColumn(
                       label: 'الوصف',
                       hintText:
                           'كتاب عن أساسيات البرمجة وأهم ما يحتاجه المبرمج المبتدئ',

@@ -160,8 +160,8 @@ class _PaymentFormState extends State<PaymentForm> {
                                           lastNameController.text) {
                                     if (paymentAccount.data()!['password'] ==
                                         int.parse(
-                                            paymentAccountPasswordController
-                                                .text)) {
+                                          paymentAccountPasswordController.text,
+                                        )) {
                                       // if((paymentAccount.data()!['exp_date'] as DateTime).year <= DateTime.now().year){}
                                       if (widget.totalPrice <=
                                           paymentAccount.data()!['balance']) {

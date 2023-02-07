@@ -68,22 +68,21 @@ class BookModel {
   }
 
   BookModel.fromJson(Map<String, dynamic> json)
-      : isbn = json['ISBN'],
-        title = json['Title'],
-        author = json['Author'],
-        publisher = json['Publisher'],
-        edition = json['Edition'],
-        description = json['Descreption'],
+      : isbn = json['ISBN'] ?? '',
+        title = json['Title'] ?? '',
+        author = json['Author'] ?? '',
+        publisher = json['Publisher'] ?? '',
+        edition = json['Edition'] ?? '',
+        description = json['Descreption'] ?? '',
         coverImageUrl = json['Cover_Image_url'],
-        category = json['Category'],
-        // publicationDate = DateTime.parse(json['Publication_Date']),
-        pageCount = json['Page_Count'],
-        quantity = json['Quantity'],
-        price = json['Price'],
+        category = json['Category'] ?? '',
+        pageCount = json['Page_Count'] ?? 0,
+        quantity = json['Quantity'] ?? 0,
+        price = json['Price'] ?? 0,
         ratings = json['Ratings'] != null ? List.from(json['Ratings']) : [],
-        status = json['Status'],
-        dealType = json['Deal_Type'] ?? 'sell',
-        userPhoneNumber = json['User_Phone_Number'];
+        status = json['Status'] ?? true,
+        dealType = json['Deal_Type'] ?? 'بيع',
+        userPhoneNumber = json['User_Phone_Number'] ?? '';
 
   Map<String, Object?> toJson() => {
         'ISBN': isbn,

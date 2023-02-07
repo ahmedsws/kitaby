@@ -313,6 +313,7 @@ class _CustomerBookDetailsPageState extends State<CustomerBookDetailsPage> {
                               widget.book.title,
                               overflow: TextOverflow.ellipsis,
                               maxLines: 2,
+                              textAlign: TextAlign.center,
                               style: textTheme.headline5!.copyWith(
                                 fontWeight: FontWeight.bold,
                               ),
@@ -377,6 +378,7 @@ class _CustomerBookDetailsPageState extends State<CustomerBookDetailsPage> {
                               width: 319.w,
                               child: Text(
                                 widget.book.description,
+                                textAlign: TextAlign.center,
                                 style: textTheme.bodyText2!.copyWith(
                                   color: Constants.secondrayFontColor
                                       .withOpacity(.7),
@@ -384,7 +386,7 @@ class _CustomerBookDetailsPageState extends State<CustomerBookDetailsPage> {
                                   fontWeight: FontWeight.w600,
                                   overflow: TextOverflow.ellipsis,
                                 ),
-                                maxLines: 4,
+                                maxLines: 80,
                               ),
                             ),
                             SizedBox(

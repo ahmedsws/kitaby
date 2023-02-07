@@ -30,36 +30,6 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  Future<UserModel?> getUser() async {
-    final prefs = await SharedPreferences.getInstance();
-
-    final String? result = prefs.getString('user');
-
-    if (result != null) {
-      final value = jsonDecode(result);
-
-      return UserModel.fromJson(value);
-    }
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    FutureBuilder(
-      future: getUser(),
-      builder: (context, snapshot) {
-        if (snapshot.data != null) {
-          print(snapshot.data!.name);
-          return SizedBox();
-        } else {
-          print('not found user');
-
-          return SizedBox();
-        }
-      },
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     CollectionReference books = FirebaseFirestore.instance.collection('Books');
@@ -71,11 +41,14 @@ class _HomePageState extends State<HomePage> {
           child: ListView(
             padding: EdgeInsets.zero,
             children: [
-              DrawerHeader(
+              const DrawerHeader(
                 decoration: BoxDecoration(
-                  color: Theme.of(context).accentColor,
+                  image: DecorationImage(
+                    fit: BoxFit.fill,
+                    image: AssetImage('assets/images/شعار_كتابي.png'),
+                  ),
                 ),
-                child: const SizedBox(),
+                child: SizedBox(),
               ),
               ListTile(
                 title: Text(
@@ -95,7 +68,7 @@ class _HomePageState extends State<HomePage> {
                 },
               ),
               FutureBuilder(
-                future: getUser(),
+                future: Constants.getUser(),
                 builder: (context, snapshot) {
                   return snapshot.data != null
                       ? ListTile(
@@ -131,7 +104,7 @@ class _HomePageState extends State<HomePage> {
                 },
               ),
               FutureBuilder(
-                future: getUser(),
+                future: Constants.getUser(),
                 builder: (context, snapshot) {
                   return snapshot.data != null
                       ? ListTile(
@@ -156,7 +129,7 @@ class _HomePageState extends State<HomePage> {
                 },
               ),
               FutureBuilder(
-                future: getUser(),
+                future: Constants.getUser(),
                 builder: (context, snapshot) {
                   return snapshot.data != null
                       ? ListTile(
@@ -182,7 +155,7 @@ class _HomePageState extends State<HomePage> {
                 },
               ),
               FutureBuilder(
-                future: getUser(),
+                future: Constants.getUser(),
                 builder: (context, snapshot) {
                   return snapshot.data != null
                       ? ListTile(

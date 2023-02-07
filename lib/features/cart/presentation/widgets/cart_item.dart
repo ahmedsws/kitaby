@@ -107,12 +107,16 @@ class CartItem extends StatelessWidget {
                 SizedBox(
                   height: 11.h,
                 ),
-                Text(
-                  book.author,
-                  style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                        fontSize: 12.sp,
-                        color: Colors.grey,
-                      ),
+                SizedBox(
+                  width: 120.w,
+                  child: Text(
+                    book.author,
+                    style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                          fontSize: 12.sp,
+                          color: Colors.grey,
+                        ),
+                    overflow: TextOverflow.ellipsis,
+                  ),
                 ),
                 SizedBox(
                   height: 17.h,

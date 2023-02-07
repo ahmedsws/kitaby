@@ -12,9 +12,10 @@ class BooksRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bookRating =
-        book.ratings.reduce((rating, nextRating) => rating + nextRating) /
-            book.ratings.length;
+    final bookRating = book.ratings.isNotEmpty
+        ? book.ratings.reduce((rating, nextRating) => rating + nextRating) /
+            book.ratings.length
+        : 0;
     return Container(
       width: 324.w,
       height: 129.h,

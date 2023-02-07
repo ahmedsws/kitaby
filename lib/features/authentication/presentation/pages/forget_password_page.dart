@@ -18,31 +18,27 @@ import '../../../../core/presentation/widgets/input_box_column.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_otp_text_field/flutter_otp_text_field.dart';
 
-class SignupPage extends StatefulWidget {
-  const SignupPage({super.key});
+class ForgetPasswordPage extends StatefulWidget {
+  const ForgetPasswordPage({super.key});
 
   @override
-  State<SignupPage> createState() => _SignupPageState();
+  State<ForgetPasswordPage> createState() => _ForgetPasswordPageState();
 }
 
-class _SignupPageState extends State<SignupPage> {
-  late TextEditingController nameController;
+class _ForgetPasswordPageState extends State<ForgetPasswordPage> {
   late TextEditingController phoneController;
-  late TextEditingController addressController;
   late TextEditingController passwordController;
   late TextEditingController confirmPasswordController;
 
   final _formKey = GlobalKey<FormState>();
 
-  bool isRegistiring = false;
+  bool isResettingPass = false;
   bool isSubmittingOtp = false;
 
   @override
   void initState() {
     super.initState();
-    nameController = TextEditingController();
     phoneController = TextEditingController();
-    addressController = TextEditingController();
     passwordController = TextEditingController();
     confirmPasswordController = TextEditingController();
   }
@@ -50,12 +46,12 @@ class _SignupPageState extends State<SignupPage> {
   @override
   Widget build(BuildContext context) {
     // setState(() {
-    //   isRegistiring = false;
+    //   isResettingPass = false;
     // });
     return Directionality(
       textDirection: TextDirection.rtl,
       child: Scaffold(
-        appBar: const BaseAppBar(title: 'تسجيل حساب'),
+        appBar: const BaseAppBar(title: 'استرجاع حساب'),
         body: Padding(
           padding: EdgeInsets.symmetric(horizontal: 16.w),
           child: SingleChildScrollView(
@@ -64,33 +60,14 @@ class _SignupPageState extends State<SignupPage> {
               child: Column(
                 children: [
                   InputBoxColumn(
-                    label: 'الاسم',
-                    hintText: 'أحمد محمود',
-                    suffixIconData: Icons.person,
-                    controller: nameController,
-                    validator: (p0) => nameController.text.isNotEmpty
-                        ? null
-                        : 'يجب ادخال الاسم',
-                  ),
-                  InputBoxColumn(
                     label: 'رقم الهاتف',
                     hintText: '0918005031',
                     suffixIconData: Icons.phone,
                     controller: phoneController,
-                    keyboardType: TextInputType.phone,
                     maxLength: 10,
                     validator: (p0) => phoneController.text.length == 10
                         ? null
                         : 'يجب أن يتكون الرقم من 10 أرقام',
-                  ),
-                  InputBoxColumn(
-                    label: 'العنوان',
-                    hintText: 'طرابلس، حي الأندلس',
-                    suffixIconData: Icons.place,
-                    controller: addressController,
-                    validator: (p0) => addressController.text.isNotEmpty
-                        ? null
-                        : 'يجب ادخال العنوان',
                   ),
                   InputBoxColumn(
                     label: 'كلمة المرور',
@@ -118,18 +95,18 @@ class _SignupPageState extends State<SignupPage> {
                     },
                   ),
                   SizedBox(
-                    height: 30.h,
+                    height: 40.h,
                   ),
-                  isRegistiring
+                  isResettingPass
                       ? CircularProgressIndicator(
                           color: Theme.of(context).accentColor,
                         )
                       : BaseButton(
-                          text: 'تسجيل',
+                          text: 'استرجاع',
                           onPressed: () async {
                             if (_formKey.currentState!.validate()) {
                               setState(() {
-                                isRegistiring = true;
+                                isResettingPass = true;
                               });
                               FirebaseAuth auth = FirebaseAuth.instance;
                               CollectionReference users = FirebaseFirestore
@@ -139,12 +116,13 @@ class _SignupPageState extends State<SignupPage> {
                               final result =
                                   await users.doc(phoneController.text).get();
 
-                              if (result.exists) {
+                              if (!result.exists) {
                                 buildBaseFlushBar(
                                     context: context,
-                                    message: 'الحساب برقم الهاتف موجود مسبقا!');
+                                    message:
+                                        'الحساب برقم الهاتف غير موجود مسبقا!');
                                 setState(() {
-                                  isRegistiring = false;
+                                  isResettingPass = false;
                                 });
                               } else {
                                 final String phoneNumber =
@@ -158,38 +136,15 @@ class _SignupPageState extends State<SignupPage> {
                                         .signInWithCredential(credential)
                                         .then(
                                       (value) {
-                                        final user = UserModel(
-                                          id: value.user!.uid,
-                                          name: nameController.text,
-                                          phoneNumber: phoneController.text,
-                                          location: addressController.text,
-                                          password: passwordController.text,
-                                        ).toJson();
-
-                                        users
-                                            .doc(phoneController.text)
-                                            .set(user)
-                                            .then(
+                                        users.doc(phoneController.text).update({
+                                          'password': passwordController.text,
+                                        }).then(
                                           (value) async {
-                                            final prefs =
-                                                await SharedPreferences
-                                                    .getInstance();
-
-                                            await prefs.setString(
-                                              'user',
-                                              jsonEncode(user),
-                                            );
-
                                             WidgetsBinding.instance
                                                 .addPostFrameCallback(
                                               (timeStamp) {
-                                                Navigator.pushReplacement(
-                                                  context,
-                                                  MaterialPageRoute(
-                                                    builder: (context) =>
-                                                        const NavBarBase(),
-                                                  ),
-                                                );
+                                                Navigator.pop(context);
+                                                Navigator.pop(context);
 
                                                 buildBaseFlushBar(
                                                   context: context,
@@ -197,7 +152,7 @@ class _SignupPageState extends State<SignupPage> {
                                                       'تمت العملية بنجاح!',
                                                   backgroundColor: Colors.green,
                                                   message:
-                                                      'تم انشاء حسابك بنجاح!',
+                                                      'تم تغيير كلمة المرور',
                                                 );
                                               },
                                             );
@@ -214,7 +169,7 @@ class _SignupPageState extends State<SignupPage> {
                                         message: 'خطأ في رقم الهاتف',
                                       );
                                       setState(() {
-                                        isRegistiring = false;
+                                        isResettingPass = false;
                                       });
                                     }
                                   },
@@ -295,56 +250,24 @@ class _SignupPageState extends State<SignupPage> {
                                                                 phoneAuthCredential)
                                                             .then(
                                                           (value) {
-                                                            final user =
-                                                                UserModel(
-                                                              id: value
-                                                                  .user!.uid,
-                                                              name:
-                                                                  nameController
-                                                                      .text,
-                                                              phoneNumber:
-                                                                  phoneController
-                                                                      .text,
-                                                              location:
-                                                                  addressController
-                                                                      .text,
-                                                              password:
-                                                                  passwordController
-                                                                      .text,
-                                                            ).toJson();
-
                                                             users
                                                                 .doc(
                                                                     phoneController
                                                                         .text)
-                                                                .set(user)
-                                                                .then(
+                                                                .update({
+                                                              'password':
+                                                                  passwordController
+                                                                      .text,
+                                                            }).then(
                                                               (value) async {
-                                                                final prefs =
-                                                                    await SharedPreferences
-                                                                        .getInstance();
-
-                                                                await prefs
-                                                                    .setString(
-                                                                  'user',
-                                                                  jsonEncode(
-                                                                      user),
-                                                                );
-
                                                                 WidgetsBinding
                                                                     .instance
                                                                     .addPostFrameCallback(
                                                                   (timeStamp) {
-                                                                    // Navigator.pop(context);
-                                                                    Navigator
-                                                                        .pushReplacement(
-                                                                      context,
-                                                                      MaterialPageRoute(
-                                                                        builder:
-                                                                            (context) =>
-                                                                                const NavBarBase(),
-                                                                      ),
-                                                                    );
+                                                                    Navigator.pop(
+                                                                        context);
+                                                                    Navigator.pop(
+                                                                        context);
 
                                                                     buildBaseFlushBar(
                                                                       context:
@@ -355,7 +278,7 @@ class _SignupPageState extends State<SignupPage> {
                                                                           Colors
                                                                               .green,
                                                                       message:
-                                                                          'تم انشاء حسابك بنجاح!',
+                                                                          'تم تغيير كلمة المرور',
                                                                     );
                                                                   },
                                                                 );
@@ -374,12 +297,12 @@ class _SignupPageState extends State<SignupPage> {
                                   timeout: const Duration(seconds: 120),
                                   codeAutoRetrievalTimeout:
                                       (String verificationId) {
-                                    // buildBaseFlushBar(
-                                    //   message: 'انتهى وقت استرجاع كلمة التحقق',
-                                    //   context: context,
-                                    // );
+                                    buildBaseFlushBar(
+                                      message: 'انتهى وقت استرجاع كلمة التحقق',
+                                      context: context,
+                                    );
                                     setState(() {
-                                      isRegistiring = false;
+                                      isResettingPass = false;
                                     });
                                   },
                                 );
@@ -390,7 +313,7 @@ class _SignupPageState extends State<SignupPage> {
                                 message: 'يجب تعبئة الحقول بشكل صحيح!',
                               );
                               setState(() {
-                                isRegistiring = false;
+                                isResettingPass = false;
                               });
                             }
                           },

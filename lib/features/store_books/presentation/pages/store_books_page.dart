@@ -19,7 +19,20 @@ class StoreBooksPage extends StatefulWidget {
 class _StoreBooksPageState extends State<StoreBooksPage> {
   String searchText = '';
   List<String> filter = [];
-  List<String> searchFilters = ['علوم', 'فكر'];
+  List<String> searchFilters = [
+    'شريعة',
+    'اقتصاد',
+    'علوم حاسب',
+    'طب',
+    'هندسة',
+    'تاريخ',
+    'فكر',
+    'روايات',
+    'رياضة',
+  ];
+
+  bool? sortByLowerPrice;
+  bool? sortByHighRate;
 
   @override
   Widget build(BuildContext context) {
@@ -30,6 +43,73 @@ class _StoreBooksPageState extends State<StoreBooksPage> {
       child: Scaffold(
         appBar: BaseAppBar(
           title: 'كتب المتجر',
+          // actions: [
+          //   IconButton(
+          //     onPressed: () {
+          //       showDialog(
+          //         context: context,
+          //         builder: (context) => Directionality(
+          //           textDirection: TextDirection.rtl,
+          //           child: SimpleDialog(
+          //             title: Center(
+          //               child: Text(
+          //                 'تصنيف',
+          //                 style: textTheme.bodyText1!.copyWith(
+          //                   fontSize: 24.sp,
+          //                   fontWeight: FontWeight.bold,
+          //                   overflow: TextOverflow.ellipsis,
+          //                 ),
+          //               ),
+          //             ),
+          //             children: [
+          //               Wrap(
+          //                 children: [
+          //                   InkWell(
+          //                     onTap: () {
+          //                       // setState(() {
+          //                       //   if(sortByLowerPrice != null)
+          //                       //    {   sortByLowerPrice = !sortByLowerPrice}
+          //                       //       else{sortByLowerPrice= true}
+          //                       // });
+
+          //                       Navigator.pop(context);
+          //                     },
+          //                     child: Container(
+          //                       decoration: BoxDecoration(
+          //                         border: Border.all(
+          //                           color: Theme.of(context).accentColor,
+          //                         ),
+          //                         borderRadius: BorderRadius.circular(
+          //                           10.r,
+          //                         ),
+          //                         color: sortByLowerPrice != null
+          //                             ? const Color.fromARGB(255, 135, 226, 138)
+          //                             : null,
+          //                       ),
+          //                       margin: EdgeInsets.all(10),
+          //                       padding: EdgeInsets.all(10),
+          //                       child: Text(
+          //                         'الأقل سعرا',
+          //                         style: textTheme.bodyText1!.copyWith(
+          //                           fontSize: 16.sp,
+          //                           fontWeight: FontWeight.bold,
+          //                           overflow: TextOverflow.ellipsis,
+          //                         ),
+          //                       ),
+          //                     ),
+          //                   ),
+          //                 ],
+          //               )
+          //             ],
+          //           ),
+          //         ),
+          //       );
+          //     },
+          //     icon: Icon(
+          //       Icons.sort_by_alpha_rounded,
+          //     ),
+          //   )
+          // ],
           leading: IconButton(
               onPressed: () {
                 showDialog(
@@ -177,7 +257,9 @@ class _StoreBooksPageState extends State<StoreBooksPage> {
                                             doc.book.quantity > 0)
                                         .where(
                                           (doc) => doc.book.title
-                                              .contains(searchText),
+                                              .toLowerCase()
+                                              .contains(
+                                                  searchText.toLowerCase()),
                                         )
                                         .where(
                                           (doc) {

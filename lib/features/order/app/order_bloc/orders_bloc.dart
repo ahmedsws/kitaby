@@ -23,6 +23,7 @@ class OrdersBloc extends Bloc<OrdersEvent, OrdersState> {
               .collection('Users')
               .doc(user!.phoneNumber)
               .collection('Orders')
+              .orderBy('date_created')
               .get();
 
           final booksDocs =

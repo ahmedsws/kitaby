@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 import 'order_item_model.dart';
 
 class OrderModel {
@@ -22,7 +24,7 @@ class OrderModel {
   })  : id = orderId,
         paymentMethod = json['payment_method'],
         status = json['status'],
-        dateCreated = json['date_created'],
+        dateCreated = (json['date_created'] as Timestamp).toDate(),
         totalPrice = json['total_price'],
         orderItems = orderItems;
 }

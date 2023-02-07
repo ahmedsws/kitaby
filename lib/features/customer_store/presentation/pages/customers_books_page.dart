@@ -114,7 +114,9 @@ class _CustomersBooksPageState extends State<CustomersBooksPage> {
                                             doc.book.quantity > 0)
                                         .where(
                                           (doc) => doc.book.title
-                                              .contains(searchText),
+                                              .toLowerCase()
+                                              .contains(
+                                                  searchText.toLowerCase()),
                                         ),
                                   ],
                                 )

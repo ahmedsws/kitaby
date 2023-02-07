@@ -2,6 +2,7 @@ import 'package:bloc/bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:kitaby/features/cart/models/cart_item_model.dart';
 import 'package:kitaby/features/cart/presentation/widgets/cart_item.dart';
+import 'package:kitaby/features/order/models/order_model.dart';
 import 'package:meta/meta.dart';
 
 import '../../../../utils/constants.dart';
@@ -21,13 +22,15 @@ class PlaceOrderBloc extends Bloc<PlaceOrderEvent, PlaceOrderState> {
               .collection('Users')
               .doc(user!.phoneNumber)
               .collection('Orders')
-              .add(
+              .doc();
+
+          order.set(
             {
-              // 'id': 1,
+              'id': order.id,
               'total_price': event.totalPrice,
               'payment_method': event.paymentMethod,
               'status': 'تحت المراجعة',
-              // 'date_created': DateTime.now(),
+              'date_created': Timestamp.fromDate(DateTime.now()),
             },
           );
 

@@ -133,8 +133,6 @@ class _EditAccountPageState extends State<EditAccountPage> {
                                                   final user = UserModel(
                                                     id: snap.data!.id,
                                                     name: nameController.text,
-                                                    username:
-                                                        phoneController.text,
                                                     phoneNumber:
                                                         snap.data!.phoneNumber,
                                                     location:

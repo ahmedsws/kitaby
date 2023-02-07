@@ -16,34 +16,36 @@ class CartBloc extends Bloc<CartEvent, CartState> {
         emit(CartItemsLoading());
         final user = await Constants.getUser();
 
-        final cartItemsDocs = await FirebaseFirestore.instance
-            .collection('Users')
-            .doc(user!.phoneNumber)
-            .collection('Cart')
-            .doc('cartDoc')
-            .collection('Cart_Items')
-            .get();
-        final booksDocs =
-            await FirebaseFirestore.instance.collection('Books').get();
+        if (user != null) {
+          final cartItemsDocs = await FirebaseFirestore.instance
+              .collection('Users')
+              .doc(user.phoneNumber)
+              .collection('Cart')
+              .doc('cartDoc')
+              .collection('Cart_Items')
+              .get();
+          final booksDocs =
+              await FirebaseFirestore.instance.collection('Books').get();
 
-        final cartItems = cartItemsDocs.docs.map(
-          (cartItemDoc) {
-            return CartItemModel.fromJson(cartItemDoc);
-          },
-        ).toList();
+          final cartItems = cartItemsDocs.docs.map(
+            (cartItemDoc) {
+              return CartItemModel.fromJson(cartItemDoc);
+            },
+          ).toList();
 
-        final books = booksDocs.docs.map(
-          (bookDoc) {
-            return BookModel.fromJson(bookDoc.data());
-          },
-        ).toList();
+          final books = booksDocs.docs.map(
+            (bookDoc) {
+              return BookModel.fromJson(bookDoc.data());
+            },
+          ).toList();
 
-        emit(
-          CartItemsLoaded(
-            cartItems: cartItems,
-            books: books,
-          ),
-        );
+          emit(
+            CartItemsLoaded(
+              cartItems: cartItems,
+              books: books,
+            ),
+          );
+        }
       },
     );
   }

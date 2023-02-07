@@ -153,7 +153,7 @@ class _PaymentFormState extends State<PaymentForm> {
                                 if (paymentAccount.exists) {
                                   // TODO: check exp date balnce first and last name
                                   // exp date
-                                  // balance
+
                                   if (paymentAccount.data()!['first_name'] ==
                                           firstNameController.text &&
                                       paymentAccount.data()!['last_name'] ==
@@ -162,32 +162,51 @@ class _PaymentFormState extends State<PaymentForm> {
                                         int.parse(
                                           paymentAccountPasswordController.text,
                                         )) {
-                                      // if((paymentAccount.data()!['exp_date'] as DateTime).year <= DateTime.now().year){}
-                                      if (widget.totalPrice <=
-                                          paymentAccount.data()!['balance']) {
-                                        await FirebaseFirestore.instance
-                                            .collection('Payment_Accounts')
-                                            .doc(
-                                                paymentAccountIdController.text)
-                                            .update(
-                                          {
-                                            'balance': paymentAccount
-                                                    .data()!['balance'] -
-                                                widget.totalPrice,
-                                          },
-                                        );
-                                        context.read<PlaceOrderBloc>().add(
-                                              PlaceOrderEvent(
-                                                totalPrice: widget.totalPrice,
-                                                paymentMethod: 'إلكتروني',
-                                                cartItems: widget.cartItems,
-                                              ),
-                                            );
+                                      final expDate =
+                                          DateTime.fromMillisecondsSinceEpoch(
+                                              (paymentAccount
+                                                          .data()!['exp_date']
+                                                      as Timestamp)
+                                                  .millisecondsSinceEpoch);
+
+                                      if (DateTime.now().isBefore(expDate)) {
+                                        if (widget.totalPrice <=
+                                            paymentAccount.data()!['balance']) {
+                                          await FirebaseFirestore.instance
+                                              .collection('Payment_Accounts')
+                                              .doc(paymentAccountIdController
+                                                  .text)
+                                              .update(
+                                            {
+                                              'balance': paymentAccount
+                                                      .data()!['balance'] -
+                                                  widget.totalPrice,
+                                            },
+                                          );
+                                          context.read<PlaceOrderBloc>().add(
+                                                PlaceOrderEvent(
+                                                  totalPrice: widget.totalPrice,
+                                                  paymentMethod: 'إلكتروني',
+                                                  cartItems: widget.cartItems,
+                                                ),
+                                              );
+                                        } else {
+                                          buildBaseFlushBar(
+                                            context: context,
+                                            message:
+                                                'رصيد البطاقة غير كافي لإجراء الطلب!',
+                                          );
+                                          setState(
+                                            () {
+                                              isLoging = false;
+                                            },
+                                          );
+                                        }
                                       } else {
                                         buildBaseFlushBar(
                                           context: context,
                                           message:
-                                              'رصيد البطاقة غير كافي لإجراء الطلب!',
+                                              'تاريخ صلاحية البطاقة غير ساري المفعول!',
                                         );
                                         setState(
                                           () {

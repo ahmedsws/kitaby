@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:intl/intl.dart' as intl;
 import 'package:kitaby/core/data/models/book_model.dart';
 import 'package:kitaby/features/order/models/order_model.dart';
 import 'package:kitaby/features/order/presentation/pages/order_details_page.dart.dart';
@@ -93,17 +94,17 @@ class OrderContainer extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
-                            Text(
-                              '${order.id}',
-                              textDirection: TextDirection.ltr,
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .bodyLarge!
-                                  .copyWith(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 16.sp,
-                                      overflow: TextOverflow.ellipsis),
-                            ),
+                            // Text(
+                            //   '#${number}',
+                            //   textDirection: TextDirection.ltr,
+                            //   style: Theme.of(context)
+                            //       .textTheme
+                            //       .bodyLarge!
+                            //       .copyWith(
+                            //           fontWeight: FontWeight.bold,
+                            //           fontSize: 16.sp,
+                            //           overflow: TextOverflow.ellipsis),
+                            // ),
                             SizedBox(
                               height: 8.32.h,
                             ),
@@ -129,6 +130,20 @@ class OrderContainer extends StatelessWidget {
                                   .copyWith(
                                     fontWeight: FontWeight.bold,
                                     fontSize: 16.sp,
+                                  ),
+                            ),
+                            SizedBox(
+                              height: 9.h,
+                            ),
+                            Text(
+                              intl.DateFormat('MM/dd/yyyy')
+                                  .format(order.dateCreated!),
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyLarge!
+                                  .copyWith(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 14.sp,
                                   ),
                             ),
                           ],

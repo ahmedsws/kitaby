@@ -5,6 +5,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:kitaby/core/presentation/pages/nav_bar_base.dart';
 import 'package:kitaby/core/presentation/widgets/base_button.dart';
+import 'package:kitaby/features/authentication/presentation/pages/forget_password_page.dart';
 import 'package:kitaby/features/authentication/presentation/pages/signup_page.dart';
 import 'package:kitaby/features/authentication/data/models/user_model.dart';
 import 'package:kitaby/features/home/presentation/pages/home_page.dart';
@@ -125,11 +126,21 @@ class _LoginPageState extends State<LoginPage> {
                                         context: context,
                                         message:
                                             'حطأ في رقم الهاتف أو كلمة المرور!');
+                                    setState(
+                                      () {
+                                        isLoging = false;
+                                      },
+                                    );
                                   }
                                 } else {
                                   buildBaseFlushBar(
                                     context: context,
                                     message: 'هذا الحساب موقوف!',
+                                  );
+                                  setState(
+                                    () {
+                                      isLoging = false;
+                                    },
                                   );
                                 }
                               } else {
@@ -137,11 +148,21 @@ class _LoginPageState extends State<LoginPage> {
                                     context: context,
                                     message:
                                         'حطأ في رقم الهاتف أو كلمة المرور!');
+                                setState(
+                                  () {
+                                    isLoging = false;
+                                  },
+                                );
                               }
                             } else {
                               buildBaseFlushBar(
                                 context: context,
                                 message: 'يجب تعبئة الحقول بشكل صحيح!',
+                              );
+                              setState(
+                                () {
+                                  isLoging = false;
+                                },
                               );
                             }
                           },
@@ -179,6 +200,28 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                       ],
                     ),
+                  ),
+                  SizedBox(
+                    height: 10.h,
+                  ),
+                  TextButton(
+                    child: Text(
+                      'نسيان كلمة المرور',
+                      style: textTheme.bodyText2!.copyWith(
+                        color: Constants.mainFontColor,
+                        fontSize: 13.sp,
+                        fontWeight: FontWeight.w600,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                    onPressed: () => {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const ForgetPasswordPage(),
+                        ),
+                      )
+                    },
                   ),
                 ],
               ),

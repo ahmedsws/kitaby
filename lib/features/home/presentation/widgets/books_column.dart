@@ -20,7 +20,7 @@ class BooksColumn extends StatelessWidget {
               ? Image.network(
                   book.coverImageUrl,
                   errorBuilder: (context, error, stackTrace) =>
-                      Icon(Icons.book),
+                      const Icon(Icons.book),
                   height: 184.h,
                   width: 117.w,
                 )

@@ -27,14 +27,17 @@ class OrdersPage extends StatelessWidget {
                 return SingleChildScrollView(
                   child: Column(
                     children: [
-                      ...ordersState.orders!.map(
-                        (order) {
-                          return OrderContainer(
-                            order: order,
-                            books: ordersState.books!,
-                          );
-                        },
-                      ),
+                      ...ordersState.orders!
+                          .map(
+                            (order) {
+                              return OrderContainer(
+                                order: order,
+                                books: ordersState.books!,
+                              );
+                            },
+                          )
+                          .toList()
+                          .reversed
                     ],
                   ),
                 );

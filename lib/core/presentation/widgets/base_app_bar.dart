@@ -5,10 +5,12 @@ class BaseAppBar extends StatelessWidget implements PreferredSizeWidget {
     Key? key,
     required this.title,
     this.leading,
+    this.actions,
   }) : super(key: key);
 
   final String title;
   final Widget? leading;
+  final List<Widget>? actions;
 
   @override
   Widget build(BuildContext context) {
@@ -20,6 +22,7 @@ class BaseAppBar extends StatelessWidget implements PreferredSizeWidget {
           fontWeight: FontWeight.bold,
         ),
       ),
+      actions: actions,
       elevation: 0,
       centerTitle: true,
       leading: leading,

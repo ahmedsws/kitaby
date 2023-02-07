@@ -1,5 +1,5 @@
 class UserModel {
-  final String id, name, password, phoneNumber, username, location;
+  final String id, name, password, phoneNumber, location;
   final List<int> ratings;
   final bool status;
 
@@ -8,7 +8,6 @@ class UserModel {
     required this.name,
     required this.password,
     required this.phoneNumber,
-    required this.username,
     required this.location,
     this.ratings = const [],
     this.status = true,
@@ -18,7 +17,6 @@ class UserModel {
         name = json['name'],
         password = json['password'],
         phoneNumber = json['phoneNumber'],
-        username = json['username'],
         location = json['location'],
         ratings = json['Ratings'] != null ? List.from(json['Ratings']) : [],
         status = json['Status'];
@@ -28,7 +26,6 @@ class UserModel {
         'name': name,
         'password': password,
         'phoneNumber': phoneNumber,
-        'username': username,
         'location': location,
         'Ratings': ratings,
         'Status': status,
